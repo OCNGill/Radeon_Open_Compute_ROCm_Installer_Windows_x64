@@ -518,8 +518,15 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 <div align="center">
 
-**? If this project helped you, please consider giving it a star! ?**
+**? ## 🙌 Support This Project
 
-Made with ?? for the AMD AI Community
+If this installer helped you get your rig running, consider supporting future development:
+
+- ⭐ Star this repo to help others find it
+- 💸 [Donate via PayPal](https://paypal.me/gillsystems) to keep the mission alive
+
+Your support helps me keep building tools like this—thank you! ?**
+
+Made with all AMD hardware for the AMD AI Community.
 
 </div>
