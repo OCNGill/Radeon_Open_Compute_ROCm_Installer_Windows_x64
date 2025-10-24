@@ -1,0 +1,49 @@
+# ROCm Icon Placeholder
+
+This is a placeholder for the rocm_icon.ico file.
+
+## Creating the Icon
+
+You need to create a multi-resolution ICO file with the following sizes:
+- 16x16
+- 32x32
+- 48x48
+- 256x256
+
+### Option 1: Use an Online Converter
+1. Find or create a ROCm/AMD logo image (PNG or JPG)
+2. Visit https://www.icoconverter.com/
+3. Upload your image
+4. Select all size options
+5. Download as rocm_icon.ico
+6. Replace this file with the downloaded icon
+
+### Option 2: Use GIMP
+1. Create or import a 256x256 image
+2. Export as .ico format
+3. Select multiple sizes during export
+
+### Option 3: Use ImageMagick
+```bash
+convert rocm_logo.png -define icon:auto-resize=256,48,32,16 rocm_icon.ico
+```
+
+### Option 4: Use a Temporary Icon
+For testing purposes, you can use Windows default icons:
+```powershell
+Copy-Item "$env:SystemRoot\System32\shell32.dll" "temp.dll"
+# Extract icon #21 from shell32.dll using Resource Hacker or similar tool
+```
+
+### Recommended Design
+- Use AMD red color (#ED1C24)
+- Include "ROCm" text or logo
+- Keep it simple and recognizable at small sizes
+- Ensure good contrast for visibility
+
+## Temporary Solution for Building
+If you need to build immediately without a custom icon, you can:
+1. Use one of the default Windows icons temporarily
+2. Or comment out the icon reference in Product.wxs until you have a proper icon
+
+The installer will still work without a custom icon, it just won't look as professional.
