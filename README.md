@@ -527,6 +527,20 @@ If this installer helped you get your rig running, consider supporting future de
 
 Your support helps me keep building tools like this—thank you! ?**
 
-Made with all AMD hardware for the AMD AI Community.
+---
+
+### 🛠️ Built for the AMD AI Community
+
+Made entirely with AMD hardware—this project stands as a tribute to the builders, tinkerers, and dreamers who refuse to be gated by cost or closed ecosystems.
+
+We are the underdogs.  
+This installer offers a tactical, affordable path to local AI acceleration—giving *anyone* the power to build their own system, run their own models, and shape their own future.
+
+No cloud lock-in. No vendor gatekeeping.  
+Just raw capability, unlocked for the masses.
+
+🧠 Empowerment through accessibility.  
+🛠️ Legacy through modular design.  
+🔥 Built to run. Built to teach. Built to last.
 
 </div>
