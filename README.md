@@ -1,4 +1,4 @@
-# ?? rOCM Windows Installer
+# rOCM Windows Installer
 ## **One-Click AMD ROCm Setup for AI & Machine Learning on Windows 10/11**
 
 [![Windows 10/11](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?style=flat&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
