@@ -1,0 +1,197 @@
+name: Build ROCm MSI Installer
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master ]
+  release:
+    types: [ created ]
+
+env:
+  WIX_VERSION: "3.11.2"
+  
+jobs:
+  build-msi:
+    name: Build Windows MSI Installer
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout repository
+   uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up WiX Toolset
+        run: |
+    # Download and install WiX Toolset
+ $wixUrl = "https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe"
+   $wixInstaller = "$env:TEMP\wix311.exe"
+          Invoke-WebRequest -Uri $wixUrl -OutFile $wixInstaller
+        Start-Process -FilePath $wixInstaller -ArgumentList "/install", "/quiet", "/norestart" -Wait
+     
+          # Add WiX to PATH
+     $wixBinPath = "C:\Program Files (x86)\WiX Toolset v3.11\bin"
+          echo "$wixBinPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      
+      - name: Verify WiX installation
+        run: |
+    candle.exe -?
+          light.exe -?
+      
+      - name: Set version number
+    id: version
+        run: |
+       if ("${{ github.event_name }}" -eq "release") {
+   $version = "${{ github.event.release.tag_name }}".TrimStart('v')
+          } else {
+            $version = "1.0.0.${{ github.run_number }}"
+       }
+    echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+ echo "Version: $version"
+      
+      - name: Build installer with WiX
+        run: |
+          cd installer
+          
+     # Compile WiX source files
+          candle.exe Product.wxs `
+      -dProductVersion="${{ env.VERSION }}" `
+            -ext WixUIExtension `
+       -ext WixUtilExtension `
+            -arch x64 `
+      -out obj\
+  
+      # Link into MSI
+   light.exe obj\*.wixobj `
+            -ext WixUIExtension `
+            -ext WixUtilExtension `
+ -out ..\ROCm_Installer_${{ env.VERSION }}.msi `
+        -sval `
+   -spdb
+      
+      - name: Sign installer (if certificate available)
+   if: github.event_name == 'release'
+  run: |
+ # Code signing would go here
+   # signtool sign /f cert.pfx /p password /tr http://timestamp.digicert.com /td sha256 /fd sha256 ROCm_Installer_${{ env.VERSION }}.msi
+echo "Skipping code signing (certificate not configured)"
+      
+   - name: Calculate checksums
+        run: |
+        $msiFile = "ROCm_Installer_${{ env.VERSION }}.msi"
+          
+          # SHA256
+          $sha256 = (Get-FileHash -Path $msiFile -Algorithm SHA256).Hash
+          "$sha256  $msiFile" | Out-File -FilePath "$msiFile.sha256" -Encoding utf8
+          
+          # MD5
+   $md5 = (Get-FileHash -Path $msiFile -Algorithm MD5).Hash
+          "$md5  $msiFile" | Out-File -FilePath "$msiFile.md5" -Encoding utf8
+          
+    echo "SHA256: $sha256"
+          echo "MD5: $md5"
+      
+      - name: Create build artifacts
+        run: |
+          mkdir -p artifacts
+          
+     # Copy MSI and checksums
+   Copy-Item "ROCm_Installer_${{ env.VERSION }}.msi" artifacts/
+   Copy-Item "ROCm_Installer_${{ env.VERSION }}.msi.sha256" artifacts/
+ Copy-Item "ROCm_Installer_${{ env.VERSION }}.msi.md5" artifacts/
+     
+        # Copy documentation
+  Copy-Item README.md artifacts/
+      Copy-Item QUICKSTART.md artifacts/
+  Copy-Item LICENSE artifacts/ -ErrorAction SilentlyContinue
+      
+          # Create installation notes
+          @"
+ # ROCm Windows 11 Installer v${{ env.VERSION }}
+          
+     ## Installation
+       1. Download ROCm_Installer_${{ env.VERSION }}.msi
+ 2. Right-click and select 'Run as Administrator'
+ 3. Follow the installation wizard
+    4. Reboot if prompted
+    
+     ## Verification
+          After installation, open WSL2:
+          ``````bash
+   wsl -d Ubuntu-22.04
+      rocminfo
+          python3 -c "import torch; print(torch.cuda.is_available())"
+     ``````
+          
+    ## System Requirements
+          - Windows 11 (Build 22000+)
+   - AMD Radeon RX 7000 Series GPU or Ryzen AI APU
+          - AMD Adrenalin 25.9.2+ driver
+          - 16GB+ RAM
+- 50GB+ free disk space
+          
+    ## Checksums
+          - SHA256: $(Get-Content "ROCm_Installer_${{ env.VERSION }}.msi.sha256" -Raw)
+          - MD5: $(Get-Content "ROCm_Installer_${{ env.VERSION }}.msi.md5" -Raw)
+       
+          ## Support
+   - GitHub: https://github.com/OCNGill/rOCM_Installer_Win11
+          - Issues: https://github.com/OCNGill/rOCM_Installer_Win11/issues
+          - Documentation: https://github.com/OCNGill/rOCM_Installer_Win11/blob/master/README.md
+   "@ | Out-File -FilePath "artifacts/INSTALL_NOTES.md" -Encoding utf8
+  
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+ name: rocm-installer-msi-${{ env.VERSION }}
+          path: artifacts/
+          retention-days: 90
+      
+      - name: Upload release assets
+     if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+   ROCm_Installer_${{ env.VERSION }}.msi
+            ROCm_Installer_${{ env.VERSION }}.msi.sha256
+            ROCm_Installer_${{ env.VERSION }}.msi.md5
+ artifacts/INSTALL_NOTES.md
+   env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  test-install:
+    name: Test Installation
+    needs: build-msi
+    runs-on: windows-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: rocm-installer-msi-*
+      
+      - name: Test MSI installation (dry run)
+        run: |
+ # Dry run test - verify MSI structure
+          $msiFile = Get-ChildItem -Recurse -Filter "*.msi" | Select-Object -First 1
+ 
+          if ($msiFile) {
+    echo "Found MSI: $($msiFile.FullName)"
+            
+          # Validate MSI structure (requires Orca or similar)
+  # For now, just check file exists and has reasonable size
+    $sizeM = [math]::Round($msiFile.Length / 1MB, 2)
+            echo "MSI Size: ${sizeM}MB"
+          
+if ($msiFile.Length -lt 1MB) {
+    echo "WARNING: MSI file seems too small"
+         exit 1
+            }
+            
+   echo "MSI validation passed"
+          } else {
+            echo "ERROR: No MSI file found"
+     exit 1
+        }
