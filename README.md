@@ -1,7 +1,7 @@
-# ?? rOCM Windows 11 Installer
-## **One-Click AMD ROCm Setup for AI & Machine Learning on Windows 11**
+# ?? rOCM Windows Installer
+## **One-Click AMD ROCm Setup for AI & Machine Learning on Windows 10/11**
 
-[![Windows 11](https://img.shields.io/badge/Windows-11-0078D6?style=flat&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
+[![Windows 10/11](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?style=flat&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
 [![ROCm](https://img.shields.io/badge/ROCm-6.1.3-ED1C24?style=flat&logo=amd&logoColor=white)](https://rocm.docs.amd.com/)
 [![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -10,7 +10,7 @@
 
 ## Project and Work Product Description
 
-This project provides a **rock-solid, production-ready** automated installer for AMD's ROCm (Radeon Open Compute) platform on Windows 11 systems using WSL2. It fills a critical gap left by AMD by providing a streamlined, user-friendly solution for AI enthusiasts, data scientists, and machine learning engineers who want to leverage AMD Radeon RX 7000 Series GPUs for their work. 
+This project provides a **rock-solid, production-ready** automated installer for AMD's ROCm (Radeon Open Compute) platform on Windows 10 Pro and Windows 11 systems using WSL2. It fills a critical gap left by AMD by providing a streamlined, user-friendly solution for AI enthusiasts, data scientists, and machine learning engineers who want to leverage AMD Radeon RX 7000 Series GPUs for their work. 
 
 The installer addresses the complex, error-prone manual installation process by providing:
 - **Automated hardware detection** and compatibility verification
@@ -33,10 +33,11 @@ The installer addresses the complex, error-prone manual installation process by 
 The rOCM Windows 11 Installer orchestrates a complete installation workflow:
 
 1. **System Compatibility Check**
-   - Verifies Windows 11 (Build 22000+)
-   - Detects AMD Radeon RX 7000 Series GPU
-   - Checks AMD driver version (24.6.1+)
-   - Confirms WSL2 capability
+   - Verifies Windows 10 Pro/Enterprise/Education (Build 19041+) or Windows 11
+   - Detects AMD Radeon RX 7000 Series GPU or Ryzen AI APU
+   - Checks AMD driver version (25.9.2+)
+   - Confirms WSL2 capability and Hyper-V support
+   - Validates Windows edition (Pro/Enterprise/Education required)
 
 2. **WSL2 Environment Setup**
    - Enables Windows Subsystem for Linux features
@@ -269,16 +270,23 @@ All custom code is thoroughly documented and includes:
 
 ### Prerequisites
 
-- **Operating System**: Windows 11 (Build 22000 or later)
+- **Operating System**: Windows 10 Pro/Enterprise/Education (Build 19041+) OR Windows 11
 - **Hardware**: AMD Radeon RX 7000 Series GPU
   - RX 7900 XTX, XT, GRE
   - RX 7800 XT
   - RX 7700 XT
   - RX 7600 XT, 7600
-- **RAM**: 16GB+ recommended
+  - Ryzen AI APUs (Radeon 890M, 880M, 780M)
+- **RAM**: 16GB+ recommended (32GB for large models)
 - **Storage**: 50GB+ free disk space
 - **Network**: Internet connection for downloads
 - **Privileges**: Administrator access required
+- **Requirements**: 
+  - Hyper-V capable system (not available on Windows Home editions)
+  - Virtualization enabled in BIOS/UEFI
+  - AMD Adrenalin drivers 25.9.2 or later
+
+> **Note**: Windows 10 Home and Windows 11 Home editions are **NOT supported** because they lack Hyper-V functionality required for WSL2.
 
 ### Installation Steps
 

@@ -19,6 +19,87 @@ function Test-AdminPrivileges {
     return $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
+function Get-WindowsVersion {
+    Write-Log "Detecting Windows version..."
+    
+    try {
+        $os = Get-CimInstance Win32_OperatingSystem
+        $build = [int]$os.BuildNumber
+        $caption = $os.Caption
+        
+        Write-Log "OS: $caption (Build $build)"
+  
+        if ($build -ge 22000) {
+  Write-Log "Detected: Windows 11" "SUCCESS"
+            return @{
+      Version = "Windows11"
+       Build = $build
+                Caption = $caption
+  }
+        } elseif ($build -ge 19041) {
+        Write-Log "Detected: Windows 10 version 2004 or later" "SUCCESS"
+    return @{
+             Version = "Windows10_2004Plus"
+           Build = $build
+    Caption = $caption
+    }
+ } elseif ($build -ge 18362) {
+            Write-Log "Detected: Windows 10 version 1903 or later" "WARNING"
+ Write-Log "Consider updating to Windows 10 version 2004 (build 19041) or later" "WARNING"
+            return @{
+                Version = "Windows10_1903Plus"
+  Build = $build
+      Caption = $caption
+       }
+    } else {
+Write-Log "Unsupported Windows version (Build $build)" "ERROR"
+            return @{
+         Version = "Unsupported"
+        Build = $build
+      Caption = $caption
+   }
+      }
+    } catch {
+        Write-Log "Error detecting Windows version: $_" "ERROR"
+        return @{
+    Version = "Unknown"
+    Build = 0
+         Caption = "Unknown"
+        }
+    }
+}
+
+function Get-WindowsEdition {
+    Write-Log "Detecting Windows edition..."
+    
+    try {
+        $edition = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").EditionID
+        Write-Log "Windows Edition: $edition"
+        
+        $supportedEditions = @("Professional", "ProfessionalWorkstation", "Enterprise", "Education", "ServerStandard", "ServerDatacenter")
+        
+        if ($edition -in $supportedEditions) {
+            Write-Log "Edition supports Hyper-V and WSL2" "SUCCESS"
+    return @{
+       Edition = $edition
+     Supported = $true
+            }
+ } else {
+            Write-Log "Edition may not support Hyper-V: $edition" "WARNING"
+            return @{
+                Edition = $edition
+        Supported = $false
+    }
+        }
+    } catch {
+        Write-Log "Error detecting Windows edition: $_" "WARNING"
+      return @{
+    Edition = "Unknown"
+    Supported = $true  # Assume supported if we can't detect
+        }
+    }
+}
+
 function Backup-SecuritySettings {
     Write-Log "Creating backup of security settings..."
     
@@ -54,16 +135,23 @@ function Disable-WindowsDefenderApplicationGuard {
     Write-Log "Checking Windows Defender Application Guard..."
     
     try {
+        # Check Windows edition first
+   $editionInfo = Get-WindowsEdition
+        
+    if (-not $editionInfo.Supported) {
+   Write-Log "Windows Defender Application Guard may not be available on $($editionInfo.Edition) edition" "INFO"
+    }
+        
         $wdag = Get-WindowsOptionalFeature -Online -FeatureName "Windows-Defender-ApplicationGuard" -ErrorAction SilentlyContinue
 
   if (-not $wdag) {
-     Write-Log "Windows Defender Application Guard not found (may not be available on this edition)" "INFO"
+  Write-Log "Windows Defender Application Guard not found (may not be available on this edition)" "INFO"
       return $true
   }
         
         if ($wdag.State -eq "Enabled") {
     Write-Log "Disabling Windows Defender Application Guard..."
-            Disable-WindowsOptionalFeature -Online -FeatureName "Windows-Defender-ApplicationGuard" -NoRestart -WarningAction SilentlyContinue
+     Disable-WindowsOptionalFeature -Online -FeatureName "Windows-Defender-ApplicationGuard" -NoRestart -WarningAction SilentlyContinue
        Write-Log "Windows Defender Application Guard disabled (restart required)" "SUCCESS"
             return $true
     } else {
@@ -72,7 +160,7 @@ function Disable-WindowsDefenderApplicationGuard {
       }
     } catch {
     Write-Log "Error disabling Windows Defender Application Guard: $_" "ERROR"
-      return $false
+    return $false
     }
 }
 
@@ -125,12 +213,19 @@ return $false
 }
 
 function Show-SmartAppControlWarning {
-    Write-Log "===== IMPORTANT: Smart App Control =====" "WARNING"
+    # Get Windows version to determine if Smart App Control is applicable
+    $winVersion = Get-WindowsVersion
+    
+    if ($winVersion.Version -eq "Windows11") {
+        Write-Log "===== IMPORTANT: Smart App Control =====" "WARNING"
   Write-Log "Smart App Control must be manually disabled:" "WARNING"
     Write-Log "1. Open Settings > Privacy & security > Windows Security" "WARNING"
     Write-Log "2. Click 'App & browser control'" "WARNING"
     Write-Log "3. Under 'Smart App Control', select 'Off'" "WARNING"
-    Write-Log "===========================================" "WARNING"
+        Write-Log "===========================================" "WARNING"
+    } else {
+  Write-Log "Smart App Control not available on Windows 10 - skipping" "INFO"
+ }
 }
 
 function Restore-SecuritySettings {
@@ -166,14 +261,30 @@ if (-not (Test-AdminPrivileges)) {
     exit 1603
 }
 
+# Detect Windows version and edition
+$winVersion = Get-WindowsVersion
+$winEdition = Get-WindowsEdition
+
+Write-Log "System Information:" "INFO"
+Write-Log "  Windows: $($winVersion.Caption)" "INFO"
+Write-Log "  Build: $($winVersion.Build)" "INFO"
+Write-Log "  Edition: $($winEdition.Edition)" "INFO"
+Write-Log "  Version Type: $($winVersion.Version)" "INFO"
+
+# Check for unsupported versions
+if ($winVersion.Version -eq "Unsupported") {
+    Write-Log "Unsupported Windows version. Requires Windows 10 build 19041+ or Windows 11." "ERROR"
+    exit 1603
+}
+
 if ($Restore) {
     # Restore mode
-    if (Restore-SecuritySettings) {
-        Write-Log "===== Security Restore: COMPLETE =====" "SUCCESS"
+  if (Restore-SecuritySettings) {
+ Write-Log "===== Security Restore: COMPLETE =====" "SUCCESS"
  exit 0
     } else {
         Write-Log "===== Security Restore: FAILED =====" "ERROR"
-        exit 1603
+   exit 1603
     }
 } else {
     # Configuration mode
@@ -193,19 +304,19 @@ if ($Restore) {
     }
     
     # Configure WSL
-    if (-not (Set-WSLConfiguration)) {
+  if (-not (Set-WSLConfiguration)) {
   $success = $false
     }
     
- # Show Smart App Control warning
+ # Show Smart App Control warning (Windows 11 only)
     Show-SmartAppControlWarning
     
     if ($success) {
    Write-Log "===== Security Configuration: COMPLETE =====" "SUCCESS"
         Write-Log "A system restart may be required for changes to take effect" "INFO"
-        exit 0
+ exit 0
     } else {
-        Write-Log "===== Security Configuration: PARTIAL =====" "WARNING"
+ Write-Log "===== Security Configuration: PARTIAL =====" "WARNING"
         exit 0  # Don't fail installation
     }
 }

@@ -116,41 +116,56 @@ return 1603
 function Install-WSL2 {
     Write-InstallLog "Installing WSL2 and Ubuntu 22.04..."
     
-    try {
+ try {
+        # Check Windows build for WSL2 support
+  $os = Get-CimInstance Win32_OperatingSystem
+      $build = [int]$os.BuildNumber
+        
+  if ($build -lt 18362) {
+      Write-InstallLog "WSL2 requires Windows 10 build 18362 or later. Current build: $build" "ERROR"
+     Write-InstallLog "Please update Windows to a newer version." "ERROR"
+return 1603
+        } elseif ($build -ge 18362 -and $build -lt 19041) {
+  Write-InstallLog "Windows 10 build $build detected. WSL2 is supported but may require manual kernel update." "WARNING"
+            Write-InstallLog "Recommended: Update to Windows 10 version 2004 (build 19041) or later." "WARNING"
+    } else {
+      Write-InstallLog "Windows build $build - WSL2 fully supported" "SUCCESS"
+  }
+        
         # Check if WSL is already installed
   $wslInstalled = $false
         try {
 wsl --version 2>&1 | Out-Null
   $wslInstalled = ($LASTEXITCODE -eq 0)
         } catch {
-            $wslInstalled = $false
+     $wslInstalled = $false
         }
-        
+  
    if ($wslInstalled) {
-          Write-InstallLog "WSL2 is already installed" "INFO"
+      Write-InstallLog "WSL2 is already installed" "INFO"
      } else {
           Write-InstallLog "Installing WSL2..."
-       wsl --install --no-distribution
+    wsl --install --no-distribution
  }
         
       # Install Ubuntu 22.04
         $distributions = wsl --list --quiet
-        if ($distributions -match "Ubuntu-22.04") {
-            Write-InstallLog "Ubuntu 22.04 already installed" "INFO"
+ if ($distributions -match "Ubuntu-22.04") {
+     Write-InstallLog "Ubuntu 22.04 already installed" "INFO"
         } else {
-            Write-InstallLog "Installing Ubuntu 22.04..."
+      Write-InstallLog "Installing Ubuntu 22.04..."
       wsl --install -d Ubuntu-22.04
-        }
+ }
         
         wsl --set-default Ubuntu-22.04
-        wsl --set-version Ubuntu-22.04 2
+    wsl --set-version Ubuntu-22.04 2
 
         Write-InstallLog "WSL2 installation complete" "SUCCESS"
       return 0
     }
     catch {
   Write-InstallLog "Error installing WSL2: $_" "ERROR"
-        return 1603
+  return 1603
     }
 }
 

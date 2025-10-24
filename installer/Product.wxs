@@ -2,35 +2,59 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
    xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
   
-  <?define ProductName = "AMD ROCm Windows 11 Installer" ?>
+  <?define ProductName = "AMD ROCm Windows Installer" ?>
   <?define ProductVersion = "1.0.0.0" ?>
   <?define ProductManufacturer = "ROCm Community" ?>
   <?define UpgradeCode = "{12345678-1234-1234-1234-123456789012}" ?>
   
   <Product Id="*" 
-           Name="$(var.ProductName)" 
+       Name="$(var.ProductName)" 
       Language="1033" 
 Version="$(var.ProductVersion)" 
        Manufacturer="$(var.ProductManufacturer)" 
            UpgradeCode="$(var.UpgradeCode)">
  
     <Package InstallerVersion="500" 
-      Compressed="yes" 
-        InstallScope="perMachine" 
-     Description="AMD ROCm Platform with PyTorch and LLM Support"
-           Comments="One-click installer for AMD GPU AI development on Windows 11"
-      Manufacturer="$(var.ProductManufacturer)" />
+   Compressed="yes" 
+  InstallScope="perMachine" 
+     Description="AMD ROCm Platform with PyTorch and LLM Support for Windows 10/11"
+           Comments="One-click installer for AMD GPU AI development on Windows 10 Pro and Windows 11"
+Manufacturer="$(var.ProductManufacturer)" />
 
-    <!-- Upgrade logic -->
+  <!-- Upgrade logic -->
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
   
     <!-- Media -->
   <MediaTemplate EmbedCab="yes" />
 
+    <!-- Detect Windows Build Number -->
+    <Property Id="WINDOWSBUILD">
+      <RegistrySearch Id="WindowsBuildSearch" 
+        Root="HKLM" 
+   Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" 
+      Name="CurrentBuildNumber" 
+             Type="raw" />
+    </Property>
+
+    <!-- Detect Windows Edition -->
+    <Property Id="WINDOWSEDITION">
+   <RegistrySearch Id="WindowsEditionSearch" 
+        Root="HKLM" 
+          Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" 
+      Name="EditionID" 
+         Type="raw" />
+    </Property>
+
     <!-- Prerequisites -->
-    <Condition Message="This application requires Windows 11 or later.">
-      <![CDATA[Installed OR (VersionNT >= 603)]]>
-  </Condition>
+    <!-- Windows 10 Pro/Enterprise/Education (Build 19041+) or Windows 11 -->
+    <Condition Message="This application requires Windows 10 Pro/Enterprise/Education (Build 19041+) or Windows 11.">
+      <![CDATA[Installed OR ((VersionNT >= 603) AND (WINDOWSBUILD >= "19041"))]]>
+    </Condition>
+
+    <!-- Check for Pro/Enterprise/Education/Server editions (required for Hyper-V) -->
+  <Condition Message="This application requires Windows Pro, Enterprise, Education, or Server edition for Hyper-V and WSL2 support. Windows Home edition is not supported.">
+      <![CDATA[Installed OR (WINDOWSEDITION = "Professional" OR WINDOWSEDITION = "ProfessionalWorkstation" OR WINDOWSEDITION = "Enterprise" OR WINDOWSEDITION = "Education" OR WINDOWSEDITION = "ServerStandard" OR WINDOWSEDITION = "ServerDatacenter")]]>
+</Condition>
 
     <!-- Features -->
     <Feature Id="ProductFeature" 
