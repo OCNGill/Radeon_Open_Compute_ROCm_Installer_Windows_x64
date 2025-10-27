@@ -80,7 +80,10 @@ foreach ($cand in $installerCandidates) {
  $installerDir = (Get-Item $cand).FullName
  break
  }
- } catch { }
+ }
+ catch {
+ # Silently continue if path resolution fails
+ }
 }
 
 # Fallback: search repository tree for any Product.wxs if not found yet
