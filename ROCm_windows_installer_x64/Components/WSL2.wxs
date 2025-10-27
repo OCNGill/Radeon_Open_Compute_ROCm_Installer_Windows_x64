@@ -8,7 +8,7 @@
 
     <DirectoryRef Id="INSTALLFOLDER">
     <Directory Id="WSL2Folder" Name="wsl2">
-   <Component Id="WSL2Config" Guid="{M3N4O5P6-Q7R8-9012-MNOP-123456789012}">
+   <Component Id="WSL2Config" Guid="{e2a1b3c4-5d6e-7f89-abcd-1234567890ef}">
           <!-- WSL configuration files -->
        <File Id="wslconfig" Source="..\src\scripts\wsl2_setup.ps1" KeyPath="yes" />
           
@@ -22,7 +22,7 @@
     </DirectoryRef>
 
     <DirectoryRef Id="ApplicationProgramsFolder">
-      <Component Id="WSL2Shortcuts" Guid="{N4O5P6Q7-R8S9-0123-NOPQ-234567890123}">
+      <Component Id="WSL2Shortcuts" Guid="{f3b2c1d4-6e5f-4a8b-bcde-2345678901ab}">
       <Shortcut Id="WSLTerminalShortcut"
 Name="ROCm WSL Terminal"
      Description="Open Ubuntu terminal with ROCm environment"
