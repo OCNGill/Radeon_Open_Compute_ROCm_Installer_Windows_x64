@@ -152,56 +152,56 @@ AllowAdvertise="no">
                   DllEntry="CAQuietExec"
                   Execute="immediate"
         Return="check"
-         Impersonate="no"
-         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" DetectGPU' />
+         Impersonate="no" />
+    <Property Id="DetectGPU" Value='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" DetectGPU' />
 
     <CustomAction Id="CheckDriverVersion"
               BinaryKey="WixCA"
               DllEntry="CAQuietExec"
               Execute="immediate"
             Return="check"
-         Impersonate="no"
-         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" CheckDriverVersion' />
+         Impersonate="no" />
+    <Property Id="CheckDriverVersion" Value='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" CheckDriverVersion' />
 
     <CustomAction Id="ConfigureSecurity"
                   BinaryKey="WixCA"
                   DllEntry="CAQuietExec"
  Execute="deferred"
         Return="check"
-              Impersonate="no"
-         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" ConfigureSecurity' />
+              Impersonate="no" />
+    <Property Id="ConfigureSecurity" Value='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" ConfigureSecurity' />
 
     <CustomAction Id="InstallWSL2"
                   BinaryKey="WixCA"
                   DllEntry="CAQuietExec"
          Execute="deferred"
              Return="check"
-           Impersonate="no"
-         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" InstallWSL2' />
+           Impersonate="no" />
+    <Property Id="InstallWSL2" Value='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" InstallWSL2' />
 
     <CustomAction Id="InstallROCm"
                   BinaryKey="WixCA"
                   DllEntry="CAQuietExec"
          Execute="deferred"
           Return="check"
-Impersonate="no"
-         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" InstallROCm' />
+Impersonate="no" />
+    <Property Id="InstallROCm" Value='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" InstallROCm' />
 
     <CustomAction Id="InstallPyTorch"
                   BinaryKey="WixCA"
                   DllEntry="CAQuietExec"
          Execute="deferred"
           Return="check"
-           Impersonate="no"
-         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" InstallPyTorch' />
+           Impersonate="no" />
+    <Property Id="InstallPyTorch" Value='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" InstallPyTorch' />
 
     <CustomAction Id="ValidateInstallation"
                   BinaryKey="WixCA"
                   DllEntry="CAQuietExec"
          Execute="deferred"
    Return="check"
-        Impersonate="no"
-         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" ValidateInstallation' />
+        Impersonate="no" />
+    <Property Id="ValidateInstallation" Value='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" ValidateInstallation' />
 
     <!-- Installation Sequence -->
     <InstallExecuteSequence>
