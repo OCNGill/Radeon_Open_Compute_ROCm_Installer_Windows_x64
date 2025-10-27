@@ -170,8 +170,8 @@ foreach ($wixFile in $wixFiles) {
  }
 
  if (-not (Test-Path $objFile)) {
- Write-ColorOutput "ERROR: Expected .wixobj not found after compiling $wixFile: $objFile" "Red"
- exit 1
+ Write-ColorOutput "ERROR: Expected .wixobj not found after compiling $wixFile: ${objFile}" "Red"
+ exit1
  }
 
  $wixObjFiles += $objFile
