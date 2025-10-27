@@ -112,6 +112,9 @@ AllowAdvertise="no">
      <ComponentGroupRef Id="DevToolsComponents" />
       </Feature>
 
+      <!-- Ensure custom action script is included in installation so it can be referenced by [#installer_actions_ps1] -->
+ <ComponentGroupRef Id="CustomActionFiles" />
+
     </Feature>
 
     <!-- Installation Directory -->
@@ -132,57 +135,59 @@ AllowAdvertise="no">
 <Directory Id="DesktopFolder" Name="Desktop" />
     </Directory>
 
-    <!-- Custom Actions -->
-    <Binary Id="CustomActionScript" SourceFile="CustomActions\installer_actions.ps1" />
+    <!-- Include the PowerShell script as a file component so it can be referenced by [#installer_actions_ps1] -->
+    <DirectoryRef Id="ScriptsFolder">
+      <Component Id="InstallerActions_Component" Guid="{A1C2D3E4-0000-0000-0000-000000000001}">
+        <File Id="installer_actions_ps1" Source="CustomActions\installer_actions.ps1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
 
-    <!-- Pre-Install GPU Detection -->
+    <ComponentGroup Id="CustomActionFiles">
+      <ComponentRef Id="InstallerActions_Component" />
+    </ComponentGroup>
+
+    <!-- Custom Actions - invoke PowerShell with the installed script file path -->
     <CustomAction Id="DetectGPU"
-                  BinaryKey="CustomActionScript"
-       Execute="immediate"
+                  Execute="immediate"
         Return="check"
-         Impersonate="no" />
+         Impersonate="no"
+         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" DetectGPU' />
 
-    <!-- Pre-Install Driver Check -->
     <CustomAction Id="CheckDriverVersion"
-              BinaryKey="CustomActionScript"
-        Execute="immediate"
+              Execute="immediate"
             Return="check"
-         Impersonate="no" />
+         Impersonate="no"
+         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" CheckDriverVersion' />
 
-    <!-- Security Configuration -->
     <CustomAction Id="ConfigureSecurity"
- BinaryKey="CustomActionScript"
-  Execute="deferred"
-        Return="check"
-              Impersonate="no" />
-
-    <!-- WSL2 Installation -->
-    <CustomAction Id="InstallWSL2"
-         BinaryKey="CustomActionScript"
  Execute="deferred"
+        Return="check"
+              Impersonate="no"
+         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" ConfigureSecurity' />
+
+    <CustomAction Id="InstallWSL2"
+         Execute="deferred"
              Return="check"
-           Impersonate="no" />
+           Impersonate="no"
+         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" InstallWSL2' />
 
-    <!-- ROCm Installation -->
     <CustomAction Id="InstallROCm"
-         BinaryKey="CustomActionScript"
-          Execute="deferred"
+         Execute="deferred"
           Return="check"
-Impersonate="no" />
+Impersonate="no"
+         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" InstallROCm' />
 
-    <!-- PyTorch Installation -->
     <CustomAction Id="InstallPyTorch"
-          BinaryKey="CustomActionScript"
-      Execute="deferred"
+          Execute="deferred"
 Return="check"
-           Impersonate="no" />
+           Impersonate="no"
+         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" InstallPyTorch' />
 
-    <!-- Post-Install Validation -->
     <CustomAction Id="ValidateInstallation"
-          BinaryKey="CustomActionScript"
-              Execute="deferred"
+          Execute="deferred"
    Return="check"
-        Impersonate="no" />
+        Impersonate="no"
+         ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" ValidateInstallation' />
 
     <!-- Installation Sequence -->
     <InstallExecuteSequence>
