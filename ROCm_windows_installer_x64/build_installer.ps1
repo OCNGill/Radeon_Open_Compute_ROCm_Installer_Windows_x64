@@ -63,21 +63,30 @@ Write-ColorOutput "Using light: $lightExe" "Green"
 # Navigate to installer directory
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-# Determine where the WiX source files live. Support multiple layouts by searching several likely locations
+# Ensure scriptDir is always a string
+$scriptDir = [string](Split-Path -Parent $MyInvocation.MyCommand.Path)
+Write-ColorOutput "DEBUG: scriptDir is $scriptDir (type: $($scriptDir.GetType().FullName))" "Gray"
+
+# Build installerCandidates as strings only
 $installerCandidates = @(
- Join-Path $scriptDir "installer",
+ [string](Join-Path $scriptDir "installer"),
  $scriptDir,
- Join-Path $scriptDir "..\installer",
- Join-Path $scriptDir "..",
- Join-Path $scriptDir "..\..\installer",
- Join-Path $scriptDir "..\.."
+ [string](Join-Path $scriptDir "..\installer"),
+ [string](Join-Path $scriptDir ".."),
+ [string](Join-Path $scriptDir "..\..\installer"),
+ [string](Join-Path $scriptDir "..\..")
 )
+
 $installerDir = $null
 foreach ($cand in $installerCandidates) {
+ # Defensive: skip if $cand is an array
+ if ($cand -is [System.Array]) {
+ Write-ColorOutput "WARNING: Candidate path is array, skipping: $cand" "Yellow"
+ continue
+ }
  try {
- # Defensive: ensure $cand is a string
  $candStr = [string]$cand
- Write-ColorOutput "DEBUG: Checking candidate path: $candStr" "Gray"
+ Write-ColorOutput "DEBUG: Checking candidate path: $candStr (type: $($candStr.GetType().FullName))" "Gray"
  $candPath = Resolve-Path -Path $candStr -ErrorAction SilentlyContinue
  $productWxsPath = Join-Path -Path $candStr -ChildPath "Product.wxs"
  Write-ColorOutput "DEBUG: Product.wxs candidate: $productWxsPath" "Gray"
