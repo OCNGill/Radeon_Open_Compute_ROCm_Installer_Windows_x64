@@ -170,7 +170,7 @@ foreach ($wixFile in $wixFiles) {
  }
 
  if (-not (Test-Path $objFile)) {
- Write-ColorOutput "ERROR: Expected .wixobj not found after compiling $wixFile: $objFile" "Red"
+ Write-ColorOutput "ERROR: Expected .wixobj not found after compiling ${wixFile}: $objFile" "Red"
  exit 1
  }
 
@@ -215,7 +215,7 @@ if ($procLight.ExitCode -ne0) {
 
 # Verify MSI exists
 if (-not (Test-Path $msiFile)) {
- Write-ColorOutput "ERROR: MSI was not created at expected path: $msiFile" "Red"
+ Write-ColorOutput "ERROR: MSI was not created at expected path - $msiFile" "Red"
  exit 1
 }
 
