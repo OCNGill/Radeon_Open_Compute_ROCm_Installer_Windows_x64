@@ -9,218 +9,140 @@ on:
 jobs:
   build-and-release:
     runs-on: windows-latest
-    
+
     steps:
-   - name: Checkout Repository
- uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-   - name: Install WiX Toolset
-        shell: powershell
-        run: |
-       Write-Host "Installing WiX Toolset v3.11.2..." -ForegroundColor Cyan
-          choco install wixtoolset --version=3.11.2 -y
-    Write-Host "WiX Toolset installed successfully" -ForegroundColor Green
+    - name: Install WiX Toolset
+      shell: powershell
+      run: |
+        Write-Host "Installing WiX Toolset v3.11.2..." -ForegroundColor Cyan
+        choco install wixtoolset --version=3.11.2 -y
+        Write-Host "WiX Toolset installed successfully" -ForegroundColor Green
 
-      - name: Extract Version from Tag
+    - name: Extract Version from Tag
       id: get_version
       shell: powershell
-     run: |
-    $tag = "${{ github.ref_name }}"
-       $version = $tag -replace '^v', ''
-if ($version -notmatch '^\d+\.\d+') {
-        $version = "1.3.0.0"
-          } elseif ($version -notmatch '\.\d+\.\d+$') {
-   $version = "$version.0.0"
-          }
-     echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        Write-Host "Version: $version" -ForegroundColor Green
-
-      - name: Create Self-Signed Certificate
-        shell: powershell
-    run: |
-          Write-Host "Creating self-signed certificate..." -ForegroundColor Cyan
-          $cert = New-SelfSignedCertificate `
-     -Type CodeSigningCert `
-        -Subject "CN=ROCm Community Developer, O=ROCm Community, C=US" `
-         -KeyAlgorithm RSA `
-      -KeyLength 2048 `
- -CertStoreLocation "Cert:\CurrentUser\My" `
-         -NotAfter (Get-Date).AddYears(3)
-          
-          $password = ConvertTo-SecureString -String "ROCmInstaller2025" -Force -AsPlainText
-$pfxPath = Join-Path $env:TEMP "codesign.pfx"
-          Export-PfxCertificate -Cert $cert -FilePath $pfxPath -Password $password
-     
-    echo "PFX_PATH=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-       echo "PFX_PASSWORD=ROCmInstaller2025" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "Self-signed certificate created: $pfxPath" -ForegroundColor Green
-
-      - name: Build MSI Installer
-        shell: powershell
-run: |
-        Write-Host "Building ROCm Windows Installer..." -ForegroundColor Cyan
-  Push-Location ROCm_windows_installer_x64
-          
-       # Run build script
-          .\build_installer.ps1 -Configuration Release -Version "$env:VERSION" -Clean
-          
-# Find the generated MSI
-          $msi = Get-ChildItem -Path "bin\Release" -Filter "*.msi" -Recurse | Select-Object -First 1
-          if (-not $msi) {
-            throw "MSI file not found after build"
-          }
-      
-      # Rename to standard format
-          $targetName = "ROCm_windows_x64_$env:VERSION.msi"
-          $targetPath = Join-Path (Split-Path $msi.FullName) $targetName
-     Move-Item -Path $msi.FullName -Destination $targetPath -Force
-          
-          Write-Host "MSI built and renamed: $targetPath" -ForegroundColor Green
-          echo "MSI_PATH=$targetPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-       Pop-Location
-
-      - name: Sign MSI with Self-Signed Certificate
-   shell: powershell
-        run: |
-   Write-Host "Signing MSI installer..." -ForegroundColor Cyan
-          
- $signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe"
-          if (-not (Test-Path $signtool)) {
-            $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin" -Recurse -Filter "signtool.exe" | 
-    Select-Object -First 1 -ExpandProperty FullName
-          }
-     
-          & $signtool sign /f "$env:PFX_PATH" /p "$env:PFX_PASSWORD" /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /d "ROCm Windows Installer" "$env:MSI_PATH"
-
-          if ($LASTEXITCODE -eq 0) {
-            Write-Host "MSI signed successfully" -ForegroundColor Green
- 
- # Verify signature
-     & $signtool verify /pa "$env:MSI_PATH"
-      } else {
-      Write-Host "Warning: Signing completed with warnings" -ForegroundColor Yellow
-          }
-
-      - name: Generate Checksums
-        shell: powershell
       run: |
-          Write-Host "Generating checksums..." -ForegroundColor Cyan
- 
-          $sha256 = (Get-FileHash -Path "$env:MSI_PATH" -Algorithm SHA256).Hash
-          $md5 = (Get-FileHash -Path "$env:MSI_PATH" -Algorithm MD5).Hash
-        
-          $msiName = Split-Path -Leaf "$env:MSI_PATH"
-          
-    # Create checksum files
-          "$sha256  $msiName" | Out-File -FilePath "$env:MSI_PATH.sha256" -Encoding utf8
-          "$md5  $msiName" | Out-File -FilePath "$env:MSI_PATH.md5" -Encoding utf8
-          
-          Write-Host "SHA256: $sha256" -ForegroundColor Gray
-          Write-Host "MD5: $md5" -ForegroundColor Gray
-    
-echo "SHA256=$sha256" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        $tag = "${{ github.ref_name }}"
+        $version = $tag -replace '^v', ''
+        if ($version -notmatch '^\d+\.\d+') {
+          $version = "1.3.0.0"
+        } elseif ($version -notmatch '\.\d+\.\d+$') {
+          $version = "$version.0.0"
+        }
+        echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Copy MSI to Repository Root
-        shell: powershell
-        run: |
-          $rootMsi = "ROCm_windows_x64_1.3.msi"
-      Copy-Item -Path "$env:MSI_PATH" -Destination $rootMsi -Force
-          Write-Host "MSI copied to root: $rootMsi" -ForegroundColor Green
- echo "ROOT_MSI_PATH=$rootMsi" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+    - name: Create Self-Signed Certificate
+      shell: powershell
+      run: |
+        Write-Host "Creating self-signed certificate..." -ForegroundColor Cyan
+        $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=ROCm Community Developer, O=ROCm Community, C=US" -KeyAlgorithm RSA -KeyLength 2048 -CertStoreLocation "Cert:\CurrentUser\My" -NotAfter (Get-Date).AddYears(3)
+        $password = ConvertTo-SecureString -String "ROCmInstaller2025" -Force -AsPlainText
+        $pfxPath = Join-Path $env:TEMP "codesign.pfx"
+        Export-PfxCertificate -Cert $cert -FilePath $pfxPath -Password $password
+        echo "PFX_PATH=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "PFX_PASSWORD=ROCmInstaller2025" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        Write-Host "Self-signed certificate created: $pfxPath" -ForegroundColor Green
 
-      - name: Create Release Notes
-        id: release_notes
-        shell: powershell
-        run: |
- $notes = @"
-    # ROCm Windows Installer v$env:VERSION
-          
-    ## ?? One-Click Installation for AMD GPUs
-   
-          **Download the MSI installer below and run as Administrator.**
-          
-      ### ?? Security Notice
-       This installer is signed with a self-signed certificate for testing and community distribution.
-          **Windows SmartScreen will show a warning** - this is expected for self-signed applications.
-          
-   To install:
-        1. Click "More info" on the SmartScreen warning
-        2. Click "Run anyway"
-          3. Follow the installation wizard
-          
-          ### ? What's New in v$env:VERSION
-          - Consolidated Python and MSI installer branches
-          - Cleaned and standardized ROCm spelling throughout
-        - Professional repository structure
-          - Enhanced build automation
-          
-          ### ?? What's Included
-          - ? AMD ROCm 6.1.3 Runtime
-          - ? WSL2 + Ubuntu 22.04 Setup
-    - ? PyTorch 2.1.2 with ROCm Support
-     - ? LM Studio GUI Integration
-          - ? Development Tools (rocminfo, amd-smi)
-   
-          ### ?? System Requirements
-      - Windows 10 Pro/Enterprise/Education (Build 19041+) **OR** Windows 11
-          - AMD Radeon RX 7000 Series GPU or Ryzen AI APU
-          - 16GB+ RAM (32GB recommended)
-          - 50GB+ free disk space
-  - Hyper-V capable system (**Windows Home NOT supported**)
-        
-      ### ?? Checksums
-   - **SHA256**: ``$env:SHA256``
-    
-          ### ?? Documentation
-    See [README.md](https://github.com/OCNGill/Radeon_Open_Compute_ROCm_Installer_Windows_x64/blob/master/README.md) for complete installation guide.
+    - name: Build MSI Installer
+      shell: powershell
+      run: |
+        Write-Host "Building ROCm Windows Installer..." -ForegroundColor Cyan
+        Push-Location ROCm_windows_installer_x64
+        .\build_installer.ps1 -Configuration Release -Version "$env:VERSION" -Clean
+        $msi = Get-ChildItem -Path "bin\Release" -Filter "*.msi" -Recurse | Select-Object -First 1
+        if (-not $msi) { throw "MSI file not found after build" }
+        $targetName = "ROCm_windows_x64_$env:VERSION.msi"
+        $targetPath = Join-Path (Split-Path $msi.FullName) $targetName
+        Move-Item -Path $msi.FullName -Destination $targetPath -Force
+        Write-Host "MSI built and renamed: $targetPath" -ForegroundColor Green
+        echo "MSI_PATH=$targetPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        Pop-Location
 
-          ### ?? Issues
-          Report bugs at [GitHub Issues](https://github.com/OCNGill/Radeon_Open_Compute_ROCm_Installer_Windows_x64/issues)
-          "@
-    
-          $notes | Out-File -FilePath "release_notes.md" -Encoding utf8
-          echo "RELEASE_NOTES<<EOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-          $notes | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-          echo "EOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+    - name: Sign MSI with Self-Signed Certificate
+      shell: powershell
+      run: |
+        Write-Host "Signing MSI installer..." -ForegroundColor Cyan
+        $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin" -Recurse -Filter "signtool.exe" | Select-Object -First 1 -ExpandProperty FullName
+        & $signtool sign /f "$env:PFX_PATH" /p "$env:PFX_PASSWORD" /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /d "ROCm Windows Installer" "$env:MSI_PATH"
+        if ($LASTEXITCODE -eq 0) {
+          Write-Host "MSI signed successfully" -ForegroundColor Green
+          & $signtool verify /pa "$env:MSI_PATH"
+        } else {
+          Write-Host "Warning: Signing completed with warnings" -ForegroundColor Yellow
+        }
 
- - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-   env:
-   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-      tag_name: ${{ github.ref_name }}
-          release_name: ROCm Windows Installer ${{ github.ref_name }}
-      body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
-          draft: false
-          prerelease: false
+    - name: Generate Checksums
+      shell: powershell
+      run: |
+        Write-Host "Generating checksums..." -ForegroundColor Cyan
+        $sha256 = (Get-FileHash -Path "$env:MSI_PATH" -Algorithm SHA256).Hash
+        $md5 = (Get-FileHash -Path "$env:MSI_PATH" -Algorithm MD5).Hash
+        $msiName = Split-Path -Leaf "$env:MSI_PATH"
+        "$sha256  $msiName" | Out-File -FilePath "$env:MSI_PATH.sha256" -Encoding utf8
+        "$md5  $msiName" | Out-File -FilePath "$env:MSI_PATH.md5" -Encoding utf8
+        Write-Host "SHA256: $sha256" -ForegroundColor Gray
+        Write-Host "MD5: $md5" -ForegroundColor Gray
+        echo "SHA256=$sha256" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Upload MSI to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.MSI_PATH }}
- asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi
-      asset_content_type: application/x-msi
+    - name: Copy MSI to Repository Root
+      shell: powershell
+      run: |
+        $rootMsi = "ROCm_windows_x64_1.3.msi"
+        Copy-Item -Path "$env:MSI_PATH" -Destination $rootMsi -Force
+        Write-Host "MSI copied to root: $rootMsi" -ForegroundColor Green
+        echo "ROOT_MSI_PATH=$rootMsi" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-      - name: Upload SHA256 Checksum
-   uses: actions/upload-release-asset@v1
-     env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
- with:
- upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.MSI_PATH }}.sha256
-          asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi.sha256
-          asset_content_type: text/plain
+    - name: Create Release Notes
+      id: release_notes
+      shell: powershell
+      run: |
+        $notes = "# ROCm Windows Installer v$env:VERSION`n`n## ?? One-Click Installation for AMD GPUs`n`n**Download the MSI installer below and run as Administrator.**`n`n### ?? Security Notice`nThis installer is signed with a self-signed certificate for testing and community distribution.`n**Windows SmartScreen will show a warning** - this is expected for self-signed applications.`n`nTo install:`n1. Click `"More info`" on the SmartScreen warning`n2. Click `"Run anyway`"`n3. Follow the installation wizard`n`n### ? What's New in v$env:VERSION`n- Consolidated Python and MSI installer branches`n- Cleaned and standardized ROCm spelling throughout`n- Professional repository structure`n- Enhanced build automation`n`n### ?? What's Included`n- ? AMD ROCm 6.1.3 Runtime`n- ? WSL2 + Ubuntu 22.04 Setup`n- ? PyTorch 2.1.2 with ROCm Support`n- ? LM Studio GUI Integration`n- ? Development Tools (rocminfo, amd-smi)`n`n### ?? System Requirements`n- Windows 10 Pro/Enterprise/Education (Build 19041+) **OR** Windows 11`n- AMD Radeon RX 7000 Series GPU or Ryzen AI APU`n- 16GB+ RAM (32GB recommended)`n- 50GB+ free disk space`n- Hyper-V capable system (**Windows Home NOT supported**)`n`n### ?? Checksums`n- **SHA256**: ``$env:SHA256`` `n`n### ?? Documentation`nSee [README.md](https://github.com/OCNGill/Radeon_Open_Compute_ROCm_Installer_Windows_x64/blob/master/README.md) for complete installation guide.`n`n### ?? Issues`nReport bugs at [GitHub Issues](https://github.com/OCNGill/Radeon_Open_Compute_ROCm_Installer_Windows_x64/issues)"
+        $notes | Out-File -FilePath "release_notes.md" -Encoding utf8
+        echo "RELEASE_NOTES<<EOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        $notes | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        echo "EOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
-      - name: Upload MD5 Checksum
-        uses: actions/upload-release-asset@v1
-        env:
-   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-     upload_url: ${{ steps.create_release.outputs.upload_url }}
-       asset_path: ${{ env.MSI_PATH }}.md5
-          asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi.md5
-       asset_content_type: text/plain
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: ROCm Windows Installer ${{ github.ref_name }}
+        body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
+        draft: false
+        prerelease: false
+
+    - name: Upload MSI to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.MSI_PATH }}
+        asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi
+        asset_content_type: application/x-msi
+
+    - name: Upload SHA256 Checksum
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.MSI_PATH }}.sha256
+        asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi.sha256
+        asset_content_type: text/plain
+
+    - name: Upload MD5 Checksum
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.MSI_PATH }}.md5
+        asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi.md5
+        asset_content_type: text/plain
