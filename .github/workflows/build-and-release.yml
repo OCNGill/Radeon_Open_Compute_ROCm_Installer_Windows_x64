@@ -1,289 +1,289 @@
+# This workflow has been through a legendary number of iterations to get GitHub Actions to recognize and run it. If you are reading this, it finally worked!
 # Trigger: push to tags v* or manual dispatch
 name: Build and Release ROCm Installer
 
 on:
-  push:
-    tags:
-      - 'v*'
-  workflow_dispatch:
+ push:
+ tags:
+ - 'v*'
+ workflow_dispatch:
 
 jobs:
-  build-and-release:
-    runs-on: windows-latest
+ build-and-release:
+ runs-on: windows-latest
+ steps:
+ - name: Workflow presence heartbeat
+ run: echo "[INFO] Workflow is present and ready."
 
-    steps:
-    - name: Workflow presence heartbeat
-      run: echo "[INFO] Workflow is present and ready."
+ - name: Checkout Repository
+ uses: actions/checkout@v4
 
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+ - name: Validate build_installer.ps1 Syntax
+ shell: powershell
+ run: |
+ Write-Host "STEP: Validate build_installer.ps1 syntax"
+ try {
+ $code = Get-Content -Path "ROCm_windows_installer_x64\build_installer.ps1" -Raw
+ [System.Management.Automation.Language.Parser]::ParseInput($code, [ref]$null, [ref]$null) | Out-Null
+ Write-Host "build_installer.ps1 parsed OK"
+ } catch {
+ Write-Host "Parse error in build_installer.ps1: $($_.Exception.Message)" -ForegroundColor Red
+ throw
+ }
 
-    - name: Validate build_installer.ps1 Syntax
-      shell: powershell
-      run: |
-        Write-Host "STEP: Validate build_installer.ps1 syntax"
-        try {
-          $code = Get-Content -Path "ROCm_windows_installer_x64\build_installer.ps1" -Raw
-          [System.Management.Automation.Language.Parser]::ParseInput($code, [ref]$null, [ref]$null) | Out-Null
-          Write-Host "build_installer.ps1 parsed OK"
-        } catch {
-          Write-Host "Parse error in build_installer.ps1: $($_.Exception.Message)" -ForegroundColor Red
-          throw
-        }
+ - name: Ensure WiX Toolset is installed
+ shell: powershell
+ run: |
+ Write-Host "STEP: Ensure WiX Toolset"
+ try {
+ $found = Get-Command candle.exe -ErrorAction SilentlyContinue
+ if (-not $found) {
+ Write-Host "WiX Toolset not found. Installing via Chocolatey..." -ForegroundColor Cyan
+ choco install wixtoolset -y
+ Write-Host "WiX Toolset installed" -ForegroundColor Green
+ } else {
+ Write-Host "WiX Toolset already installed at: $($found.Path)" -ForegroundColor Green
+ }
+ } catch {
+ Write-Host "ERROR MESSAGE: $($_.Exception.Message)" -ForegroundColor Red
+ Write-Host "SCRIPT STACKTRACE: $($_.ScriptStackTrace)" -ForegroundColor Red
+ throw
+ }
 
-    - name: Ensure WiX Toolset is installed
-      shell: powershell
-      run: |
-        Write-Host "STEP: Ensure WiX Toolset"
-        try {
-          $found = Get-Command candle.exe -ErrorAction SilentlyContinue
-          if (-not $found) {
-            Write-Host "WiX Toolset not found. Installing via Chocolatey..." -ForegroundColor Cyan
-            choco install wixtoolset -y
-            Write-Host "WiX Toolset installed" -ForegroundColor Green
-          } else {
-            Write-Host "WiX Toolset already installed at: $($found.Path)" -ForegroundColor Green
-          }
-        } catch {
-          Write-Host "ERROR MESSAGE: $($_.Exception.Message)" -ForegroundColor Red
-          Write-Host "SCRIPT STACKTRACE: $($_.ScriptStackTrace)" -ForegroundColor Red
-          throw
-        }
+ - name: Extract Version from Tag
+ id: get_version
+ shell: powershell
+ run: |
+ Write-Host "STEP: Extract Version from Tag"
+ try {
+ $tag = "${{ github.ref_name }}"
 
-    - name: Extract Version from Tag
-      id: get_version
-      shell: powershell
-      run: |
-        Write-Host "STEP: Extract Version from Tag"
-        try {
-          $tag = "${{ github.ref_name }}"
+ # Debug: Show the raw tag value
+ Write-Host "Raw tag value: $tag" -ForegroundColor Yellow
 
-          # Debug: Show the raw tag value
-          Write-Host "Raw tag value: $tag" -ForegroundColor Yellow
+ $version = $tag -replace '^v', ''
+ if ($version -notmatch '^[\d\.]+$') {
+ $version = "1.3.0.0"
+ } elseif ($version -notmatch '\.\d+\.\d+$') {
+ $version = "$version.0.0"
+ }
 
-          $version = $tag -replace '^v', ''
-          if ($version -notmatch '^[\d\.]+$') {
-            $version = "1.3.0.0"
-          } elseif ($version -notmatch '\.\d+\.\d+$') {
-            $version = "$version.0.0"
-          }
+ # Debug: Show the extracted version value
+ Write-Host "Extracted version: $version" -ForegroundColor Yellow
 
-          # Debug: Show the extracted version value
-          Write-Host "Extracted version: $version" -ForegroundColor Yellow
+ echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+ } catch {
+ Write-Host "ERROR MESSAGE: $($_.Exception.Message)" -ForegroundColor Red
+ Write-Host "SCRIPT STACKTRACE: $($_.ScriptStackTrace)" -ForegroundColor Red
+ throw
+ }
 
-          echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        } catch {
-          Write-Host "ERROR MESSAGE: $($_.Exception.Message)" -ForegroundColor Red
-          Write-Host "SCRIPT STACKTRACE: $($_.ScriptStackTrace)" -ForegroundColor Red
-          throw
-        }
+ - name: Create Self-Signed Certificate
+ shell: powershell
+ run: |
+ Write-Host "STEP: Create Self-Signed Certificate"
+ try {
+ $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=ROCm Community Developer, O=ROCm Community, C=US" -KeyAlgorithm RSA -KeyLength 2048 -CertStoreLocation "Cert:\CurrentUser\My" -NotAfter (Get-Date).AddYears(3)
+ $password = ConvertTo-SecureString -String "ROCmInstaller2025" -Force -AsPlainText
+ $pfxPath = Join-Path $env:TEMP "codesign.pfx"
+ Export-PfxCertificate -Cert $cert -FilePath $pfxPath -Password $password
+ echo "PFX_PATH=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+ echo "PFX_PASSWORD=ROCmInstaller2025" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+ Write-Host "Self-signed certificate created: $pfxPath" -ForegroundColor Green
+ } catch {
+ Write-Host "ERROR MESSAGE: $($_.Exception.Message)" -ForegroundColor Red
+ Write-Host "SCRIPT STACKTRACE: $($_.ScriptStackTrace)" -ForegroundColor Red
+ throw
+ }
 
-    - name: Create Self-Signed Certificate
-      shell: powershell
-      run: |
-        Write-Host "STEP: Create Self-Signed Certificate"
-        try {
-          $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=ROCm Community Developer, O=ROCm Community, C=US" -KeyAlgorithm RSA -KeyLength 2048 -CertStoreLocation "Cert:\CurrentUser\My" -NotAfter (Get-Date).AddYears(3)
-          $password = ConvertTo-SecureString -String "ROCmInstaller2025" -Force -AsPlainText
-          $pfxPath = Join-Path $env:TEMP "codesign.pfx"
-          Export-PfxCertificate -Cert $cert -FilePath $pfxPath -Password $password
-          echo "PFX_PATH=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "PFX_PASSWORD=ROCmInstaller2025" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "Self-signed certificate created: $pfxPath" -ForegroundColor Green
-        } catch {
-          Write-Host "ERROR MESSAGE: $($_.Exception.Message)" -ForegroundColor Red
-          Write-Host "SCRIPT STACKTRACE: $($_.ScriptStackTrace)" -ForegroundColor Red
-          throw
-        }
+ - name: Build MSI Installer
+ shell: powershell
+ run: |
+ Write-Host "STEP: Build MSI Installer"
+ try {
+ Push-Location ROCm_windows_installer_x64
+ .\build_installer.ps1 -Configuration Release -Version "$env:VERSION" -Clean
+ $msi = Get-ChildItem -Path "bin\Release" -Filter "*.msi" -Recurse | Select-Object -First 1
+ if (-not $msi) { throw "MSI file not found after build" }
+ $targetName = "ROCm_windows_x64_$env:VERSION.msi"
+ $targetPath = Join-Path (Split-Path $msi.FullName) $targetName
+ Move-Item -Path $msi.FullName -Destination $targetPath -Force
+ Write-Host "MSI built and renamed: $targetPath" -ForegroundColor Green
+ echo "MSI_PATH=$targetPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+ Pop-Location
+ } catch {
+ Write-Host "ERROR MESSAGE: $($_.Exception.Message)" -ForegroundColor Red
+ Write-Host "SCRIPT STACKTRACE: $($_.ScriptStackTrace)" -ForegroundColor Red
+ throw
+ }
 
-    - name: Build MSI Installer
-      shell: powershell
-      run: |
-        Write-Host "STEP: Build MSI Installer"
-        try {
-          Push-Location ROCm_windows_installer_x64
-          .\build_installer.ps1 -Configuration Release -Version "$env:VERSION" -Clean
-          $msi = Get-ChildItem -Path "bin\Release" -Filter "*.msi" -Recurse | Select-Object -First 1
-          if (-not $msi) { throw "MSI file not found after build" }
-          $targetName = "ROCm_windows_x64_$env:VERSION.msi"
-          $targetPath = Join-Path (Split-Path $msi.FullName) $targetName
-          Move-Item -Path $msi.FullName -Destination $targetPath -Force
-          Write-Host "MSI built and renamed: $targetPath" -ForegroundColor Green
-          echo "MSI_PATH=$targetPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Pop-Location
-        } catch {
-          Write-Host "ERROR MESSAGE: $($_.Exception.Message)" -ForegroundColor Red
-          Write-Host "SCRIPT STACKTRACE: $($_.ScriptStackTrace)" -ForegroundColor Red
-          throw
-        }
+ - name: Sign MSI with Self-Signed Certificate
+ shell: powershell
+ run: |
+ Write-Host "Signing MSI installer..." -ForegroundColor Cyan
+ $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin" -Recurse -Filter "signtool.exe" | Select-Object -First 1 -ExpandProperty FullName
+ & $signtool sign /f "$env:PFX_PATH" /p "$env:PFX_PASSWORD" /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /d "ROCm Windows Installer" "$env:MSI_PATH"
+ if ($LASTEXITCODE -eq 0) {
+ Write-Host "MSI signed successfully" -ForegroundColor Green
+ & $signtool verify /pa "$env:MSI_PATH"
+ } else {
+ Write-Host "Warning: Signing completed with warnings" -ForegroundColor Yellow
+ }
 
-    - name: Sign MSI with Self-Signed Certificate
-      shell: powershell
-      run: |
-        Write-Host "Signing MSI installer..." -ForegroundColor Cyan
-        $signtool = Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin" -Recurse -Filter "signtool.exe" | Select-Object -First 1 -ExpandProperty FullName
-        & $signtool sign /f "$env:PFX_PATH" /p "$env:PFX_PASSWORD" /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /d "ROCm Windows Installer" "$env:MSI_PATH"
-        if ($LASTEXITCODE -eq 0) {
-          Write-Host "MSI signed successfully" -ForegroundColor Green
-          & $signtool verify /pa "$env:MSI_PATH"
-        } else {
-          Write-Host "Warning: Signing completed with warnings" -ForegroundColor Yellow
-        }
+ - name: Generate Checksums
+ shell: powershell
+ run: |
+ Write-Host "Generating checksums..." -ForegroundColor Cyan
+ $sha256 = (Get-FileHash -Path "$env:MSI_PATH" -Algorithm SHA256).Hash
+ $md5 = (Get-FileHash -Path "$env:MSI_PATH" -Algorithm MD5).Hash
+ $msiName = Split-Path -Leaf "$env:MSI_PATH"
+ "$sha256  $msiName" | Out-File -FilePath "$env:MSI_PATH.sha256" -Encoding utf8
+ "$md5  $msiName" | Out-File -FilePath "$env:MSI_PATH.md5" -Encoding utf8
+ Write-Host "SHA256: $sha256" -ForegroundColor Gray
+ Write-Host "MD5: $md5" -ForegroundColor Gray
+ echo "SHA256=$sha256" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-    - name: Generate Checksums
-      shell: powershell
-      run: |
-        Write-Host "Generating checksums..." -ForegroundColor Cyan
-        $sha256 = (Get-FileHash -Path "$env:MSI_PATH" -Algorithm SHA256).Hash
-        $md5 = (Get-FileHash -Path "$env:MSI_PATH" -Algorithm MD5).Hash
-        $msiName = Split-Path -Leaf "$env:MSI_PATH"
-        "$sha256  $msiName" | Out-File -FilePath "$env:MSI_PATH.sha256" -Encoding utf8
-        "$md5  $msiName" | Out-File -FilePath "$env:MSI_PATH.md5" -Encoding utf8
-        Write-Host "SHA256: $sha256" -ForegroundColor Gray
-        Write-Host "MD5: $md5" -ForegroundColor Gray
-        echo "SHA256=$sha256" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+ - name: Copy MSI to Repository Root
+ shell: powershell
+ run: |
+ $rootMsi = "ROCm_windows_x64_1.3.msi"
+ Copy-Item -Path "$env:MSI_PATH" -Destination $rootMsi -Force
+ Write-Host "MSI copied to root: $rootMsi" -ForegroundColor Green
+ echo "ROOT_MSI_PATH=$rootMsi" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-    - name: Copy MSI to Repository Root
-      shell: powershell
-      run: |
-        $rootMsi = "ROCm_windows_x64_1.3.msi"
-        Copy-Item -Path "$env:MSI_PATH" -Destination $rootMsi -Force
-        Write-Host "MSI copied to root: $rootMsi" -ForegroundColor Green
-        echo "ROOT_MSI_PATH=$rootMsi" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+ - name: Create Release Notes
+ id: release_notes
+ shell: powershell
+ run: |
+ $notes = "# ROCm Windows Installer v$env:VERSION`n`n## ?? One-Click Installation for AMD GPUs`n`n**Download the MSI installer below and run as Administrator.**`n`n### ?? Security Notice`nThis installer is signed with a self-signed certificate for testing and community distribution.`n**Windows SmartScreen will show a warning** - this is expected for self-signed applications.`n`nTo install:`n1. Click `"More info`" on the SmartScreen warning`n2. Click `"Run anyway`"`n3. Follow the installation wizard`n`n### ? What's New in v$env:VERSION`n- Consolidated Python and MSI installer branches`n- Cleaned and standardized ROCm spelling throughout`n- Professional repository structure`n- Enhanced build automation`n`n### ?? What's Included`n- ? AMD ROCm 6.1.3 Runtime`n- ? WSL2 + Ubuntu 22.04 Setup`n- ? PyTorch 2.1.2 with ROCm Support`n- ? LM Studio GUI Integration`n- ? Development Tools (rocminfo, amd-smi)`n`n### ?? System Requirements`n- Windows 10 Pro/Enterprise/Education (Build 19041+) **OR** Windows 11`n- AMD Radeon RX 7000 Series GPU or Ryzen AI APU`n- 16GB+ RAM (32GB recommended)`n- 50GB+ free disk space`n- Hyper-V capable system (**Windows Home NOT supported**)`n`n### ?? Checksums`n- **SHA256**: ``$env:SHA256`` `n`n### ?? Documentation`nSee [README.md](https://github.com/OCNGill/Radeon_Open_Compute_ROCm_Installer_Windows_x64/blob/master/README.md) for complete installation guide.`n`n### ?? Issues`nReport bugs at [GitHub Issues](https://github.com/OCNGill/Radeon_Open_Compute_ROCm_Installer_Windows_x64/issues)"
+ $notes | Out-File -FilePath "release_notes.md" -Encoding utf8
+ echo "RELEASE_NOTES<<EOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+ $notes | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+ echo "EOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
-    - name: Create Release Notes
-      id: release_notes
-      shell: powershell
-      run: |
-        $notes = "# ROCm Windows Installer v$env:VERSION`n`n## ?? One-Click Installation for AMD GPUs`n`n**Download the MSI installer below and run as Administrator.**`n`n### ?? Security Notice`nThis installer is signed with a self-signed certificate for testing and community distribution.`n**Windows SmartScreen will show a warning** - this is expected for self-signed applications.`n`nTo install:`n1. Click `"More info`" on the SmartScreen warning`n2. Click `"Run anyway`"`n3. Follow the installation wizard`n`n### ? What's New in v$env:VERSION`n- Consolidated Python and MSI installer branches`n- Cleaned and standardized ROCm spelling throughout`n- Professional repository structure`n- Enhanced build automation`n`n### ?? What's Included`n- ? AMD ROCm 6.1.3 Runtime`n- ? WSL2 + Ubuntu 22.04 Setup`n- ? PyTorch 2.1.2 with ROCm Support`n- ? LM Studio GUI Integration`n- ? Development Tools (rocminfo, amd-smi)`n`n### ?? System Requirements`n- Windows 10 Pro/Enterprise/Education (Build 19041+) **OR** Windows 11`n- AMD Radeon RX 7000 Series GPU or Ryzen AI APU`n- 16GB+ RAM (32GB recommended)`n- 50GB+ free disk space`n- Hyper-V capable system (**Windows Home NOT supported**)`n`n### ?? Checksums`n- **SHA256**: ``$env:SHA256`` `n`n### ?? Documentation`nSee [README.md](https://github.com/OCNGill/Radeon_Open_Compute_ROCm_Installer_Windows_x64/blob/master/README.md) for complete installation guide.`n`n### ?? Issues`nReport bugs at [GitHub Issues](https://github.com/OCNGill/Radeon_Open_Compute_ROCm_Installer_Windows_x64/issues)"
-        $notes | Out-File -FilePath "release_notes.md" -Encoding utf8
-        echo "RELEASE_NOTES<<EOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-        $notes | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
-        echo "EOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+ - name: Create GitHub Release
+ id: create_release
+ uses: actions/create-release@v1
+ env:
+ GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+ with:
+ tag_name: ${{ github.ref_name }}
+ release_name: ROCm Windows Installer ${{ github.ref_name }}
+ body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
+ draft: false
+ prerelease: false
 
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        release_name: ROCm Windows Installer ${{ github.ref_name }}
-        body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
-        draft: false
-        prerelease: false
+ - name: Upload MSI to Release
+ uses: actions/upload-release-asset@v1
+ env:
+ GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+ with:
+ upload_url: ${{ steps.create_release.outputs.upload_url }}
+ asset_path: ${{ env.MSI_PATH }}
+ asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi
+ asset_content_type: application/x-msi
 
-    - name: Upload MSI to Release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.MSI_PATH }}
-        asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi
-        asset_content_type: application/x-msi
+ - name: Upload SHA256 Checksum
+ uses: actions/upload-release-asset@v1
+ env:
+ GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+ with:
+ upload_url: ${{ steps.create_release.outputs.upload_url }}
+ asset_path: ${{ env.MSI_PATH }}.sha256
+ asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi.sha256
+ asset_content_type: text/plain
 
-    - name: Upload SHA256 Checksum
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.MSI_PATH }}.sha256
-        asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi.sha256
-        asset_content_type: text/plain
+ - name: Upload MD5 Checksum
+ uses: actions/upload-release-asset@v1
+ env:
+ GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+ with:
+ upload_url: ${{ steps.create_release.outputs.upload_url }}
+ asset_path: ${{ env.MSI_PATH }}.md5
+ asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi.md5
+ asset_content_type: text/plain
 
-    - name: Upload MD5 Checksum
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.MSI_PATH }}.md5
-        asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi.md5
-        asset_content_type: text/plain
+ - name: Debug - List directory structure
+ shell: powershell
+ run: |
+ Write-Host "Repository root contents:"
+ Get-ChildItem -Path . -Recurse -Depth 3 | Select-Object FullName
+ Write-Host "`nROCm_windows_installer_x64 contents:"
+ Get-ChildItem -Path ROCm_windows_installer_x64 -Recurse -Depth 2 | Select-Object FullName
+ Write-Host "`nChecking for src/scripts:"
+ if (Test-Path "ROCm_windows_installer_x64/src/scripts") {
+ Get-ChildItem -Path "ROCm_windows_installer_x64/src/scripts" | Select-Object FullName
+ } else {
+ Write-Host "ROCm_windows_installer_x64/src/scripts does not exist!"
+ }
 
-    - name: Debug - List directory structure
-      shell: powershell
-      run: |
-        Write-Host "Repository root contents:"
-        Get-ChildItem -Path . -Recurse -Depth 3 | Select-Object FullName
-        Write-Host "`nROCm_windows_installer_x64 contents:"
-        Get-ChildItem -Path ROCm_windows_installer_x64 -Recurse -Depth 2 | Select-Object FullName
-        Write-Host "`nChecking for src/scripts:"
-        if (Test-Path "ROCm_windows_installer_x64/src/scripts") {
-          Get-ChildItem -Path "ROCm_windows_installer_x64/src/scripts" | Select-Object FullName
-        } else {
-          Write-Host "ROCm_windows_installer_x64/src/scripts does not exist!"
-        }
+ - name: Ensure scripts are in build context
+ shell: powershell
+ run: |
+ Write-Host "Copying scripts to build context..."
+ $src = "ROCm_windows_installer_x64/src/scripts"
+ if (!(Test-Path $src)) {
+ Write-Host "Source directory $src does not exist! Creating it..."
+ New-Item -ItemType Directory -Path $src -Force | Out-Null
+ }
+ # Copy the committed scripts if they exist elsewhere
+ if (Test-Path "src/scripts") {
+ Copy-Item -Path "src/scripts/*" -Destination $src -Recurse -Force
+ Write-Host "Copied from src/scripts to $src"
+ }
+ Write-Host "Contents of $src after copy:"
+ if (Test-Path $src) { Get-ChildItem -Path $src | Select-Object FullName }
 
-    - name: Ensure scripts are in build context
-      shell: powershell
-      run: |
-        Write-Host "Copying scripts to build context..."
-        $src = "ROCm_windows_installer_x64/src/scripts"
-        if (!(Test-Path $src)) {
-          Write-Host "Source directory $src does not exist! Creating it..."
-          New-Item -ItemType Directory -Path $src -Force | Out-Null
-        }
-        # Copy the committed scripts if they exist elsewhere
-        if (Test-Path "src/scripts") {
-          Copy-Item -Path "src/scripts/*" -Destination $src -Recurse -Force
-          Write-Host "Copied from src/scripts to $src"
-        }
-        Write-Host "Contents of $src after copy:"
-        if (Test-Path $src) { Get-ChildItem -Path $src | Select-Object FullName }
+ - name: Ensure scripts are in build context for WiX
+ shell: powershell
+ run: |
+ $target = "ROCm_windows_installer_x64/src/scripts"
+ if (!(Test-Path $target)) { New-Item -ItemType Directory -Path $target -Force | Out-Null }
+ Copy-Item -Path "ROCm_windows_installer_x64/src/scripts/rocm_wsl2_setup.sh" -Destination $target -Force
+ Copy-Item -Path "ROCm_windows_installer_x64/src/scripts/check_amd_driver.ps1" -Destination $target -Force
+ Write-Host "Contents of $target:"
+ Get-ChildItem -Path $target | Select-Object FullName
 
-    - name: Ensure scripts are in build context for WiX
-      shell: powershell
-      run: |
-        $target = "ROCm_windows_installer_x64/src/scripts"
-        if (!(Test-Path $target)) { New-Item -ItemType Directory -Path $target -Force | Out-Null }
-        Copy-Item -Path "ROCm_windows_installer_x64/src/scripts/rocm_wsl2_setup.sh" -Destination $target -Force
-        Copy-Item -Path "ROCm_windows_installer_x64/src/scripts/check_amd_driver.ps1" -Destination $target -Force
-        Write-Host "Contents of $target:"
-        Get-ChildItem -Path $target | Select-Object FullName
+ - name: Debug - List scripts directory before WiX build
+ shell: powershell
+ run: |
+ Write-Host "Listing contents of ROCm_windows_installer_x64/src/scripts before WiX build:"
+ Get-ChildItem -Path ROCm_windows_installer_x64/src/scripts | Select-Object FullName, Length
+ Write-Host "Listing contents of ROCm_windows_installer_x64/Components:"
+ Get-ChildItem -Path ROCm_windows_installer_x64/Components | Select-Object FullName, Length
 
-    - name: Debug - List scripts directory before WiX build
-      shell: powershell
-      run: |
-        Write-Host "Listing contents of ROCm_windows_installer_x64/src/scripts before WiX build:"
-        Get-ChildItem -Path ROCm_windows_installer_x64/src/scripts | Select-Object FullName, Length
-        Write-Host "Listing contents of ROCm_windows_installer_x64/Components:"
-        Get-ChildItem -Path ROCm_windows_installer_x64/Components | Select-Object FullName, Length
+ - name: Guarantee scripts are in place for WiX
+ shell: powershell
+ run: |
+ $target = "ROCm_windows_installer_x64/src/scripts"
+ if (!(Test-Path $target)) { New-Item -ItemType Directory -Path $target -Force | Out-Null }
+ # Search for the files anywhere in the repo and copy them to the target
+ $rocm = Get-ChildItem -Path . -Recurse -Filter "rocm_wsl2_setup.sh" | Select-Object -First1
+ $driver = Get-ChildItem -Path . -Recurse -Filter "check_amd_driver.ps1" | Select-Object -First1
+ if ($rocm) { Copy-Item -Path $rocm.FullName -Destination $target -Force }
+ if ($driver) { Copy-Item -Path $driver.FullName -Destination $target -Force }
+ Write-Host "Contents of $target after copy:"
+ Get-ChildItem -Path $target | Select-Object FullName, Length
 
-    - name: Guarantee scripts are in place for WiX
-      shell: powershell
-      run: |
-        $target = "ROCm_windows_installer_x64/src/scripts"
-        if (!(Test-Path $target)) { New-Item -ItemType Directory -Path $target -Force | Out-Null }
-        # Search for the files anywhere in the repo and copy them to the target
-        $rocm = Get-ChildItem -Path . -Recurse -Filter "rocm_wsl2_setup.sh" | Select-Object -First1
-        $driver = Get-ChildItem -Path . -Recurse -Filter "check_amd_driver.ps1" | Select-Object -First1
-        if ($rocm) { Copy-Item -Path $rocm.FullName -Destination $target -Force }
-        if ($driver) { Copy-Item -Path $driver.FullName -Destination $target -Force }
-        Write-Host "Contents of $target after copy:"
-        Get-ChildItem -Path $target | Select-Object FullName, Length
+ - name: Ensure required scripts exist and are in place for WiX
+ shell: bash
+ run: |
+ set -e
+ mkdir -p ROCm_windows_installer_x64/src/scripts
+ # Create or overwrite with robust content
+ cat > ROCm_windows_installer_x64/src/scripts/rocm_wsl2_setup.sh <<'EOF'
+#!/bin/bash
+set -e
+echo "[ROCm WSL2 Setup] Starting ROCm installation in WSL2..."
+# Add real ROCm setup logic here
+EOF
 
-    - name: Ensure required scripts exist and are in place for WiX
-      shell: bash
-      run: |
-        set -e
-        mkdir -p ROCm_windows_installer_x64/src/scripts
-        # Create or overwrite with robust content
-        cat > ROCm_windows_installer_x64/src/scripts/rocm_wsl2_setup.sh <<'EOF'
-    #!/bin/bash
-    set -e
-    echo "[ROCm WSL2 Setup] Starting ROCm installation in WSL2..."
-    # Add real ROCm setup logic here
-    EOF
+ cat > ROCm_windows_installer_x64/src/scripts/check_amd_driver.ps1 <<'EOF'
+# Check AMD Driver Script for ROCm Windows Installer
+Write-Host "[INFO] Checking for AMD GPU..."
+# Add real AMD driver check logic here
+EOF
 
-        cat > ROCm_windows_installer_x64/src/scripts/check_amd_driver.ps1 <<'EOF'
-    # Check AMD Driver Script for ROCm Windows Installer
-    Write-Host "[INFO] Checking for AMD GPU..."
-    # Add real AMD driver check logic here
-    EOF
-
-        chmod +x ROCm_windows_installer_x64/src/scripts/rocm_wsl2_setup.sh
-        echo "Contents of ROCm_windows_installer_x64/src/scripts after creation/copy:"
-        ls -l ROCm_windows_installer_x64/src/scripts
+ chmod +x ROCm_windows_installer_x64/src/scripts/rocm_wsl2_setup.sh
+ echo "Contents of ROCm_windows_installer_x64/src/scripts after creation/copy:"
+ ls -l ROCm_windows_installer_x64/src/scripts
