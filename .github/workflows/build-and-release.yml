@@ -190,3 +190,16 @@ jobs:
         asset_path: ${{ env.MSI_PATH }}.md5
         asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi.md5
         asset_content_type: text/plain
+
+    - name: Ensure scripts are in build context
+      shell: powershell
+      run: |
+        Write-Host "Copying scripts to build context..."
+        $src = "ROCm_windows_installer_x64/src/scripts"
+        $dst = "ROCm_windows_installer_x64/src/scripts"
+        if (!(Test-Path $dst)) { New-Item -ItemType Directory -Path $dst -Force | Out-Null }
+        Copy-Item -Path "$src/*" -Destination $dst -Recurse -Force
+        # Also copy to build root if needed for WiX context
+        $dst2 = "ROCm_windows_installer_x64/Components/../src/scripts"
+        if (!(Test-Path $dst2)) { New-Item -ItemType Directory -Path $dst2 -Force | Out-Null }
+        Copy-Item -Path "$src/*" -Destination $dst2 -Recurse -Force
