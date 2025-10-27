@@ -146,45 +146,59 @@ AllowAdvertise="no">
       <ComponentRef Id="InstallerActions_Component" />
     </ComponentGroup>
 
-    <!-- Custom Actions - invoke PowerShell with the installed script file path -->
+    <!-- Custom Actions - use CAQuietExec from WixCA to run PowerShell with the installed script file path -->
     <CustomAction Id="DetectGPU"
+                  BinaryKey="WixCA"
+                  DllEntry="CAQuietExec"
                   Execute="immediate"
         Return="check"
          Impersonate="no"
          ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" DetectGPU' />
 
     <CustomAction Id="CheckDriverVersion"
+              BinaryKey="WixCA"
+              DllEntry="CAQuietExec"
               Execute="immediate"
             Return="check"
          Impersonate="no"
          ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" CheckDriverVersion' />
 
     <CustomAction Id="ConfigureSecurity"
+                  BinaryKey="WixCA"
+                  DllEntry="CAQuietExec"
  Execute="deferred"
         Return="check"
               Impersonate="no"
          ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" ConfigureSecurity' />
 
     <CustomAction Id="InstallWSL2"
+                  BinaryKey="WixCA"
+                  DllEntry="CAQuietExec"
          Execute="deferred"
              Return="check"
            Impersonate="no"
          ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" InstallWSL2' />
 
     <CustomAction Id="InstallROCm"
+                  BinaryKey="WixCA"
+                  DllEntry="CAQuietExec"
          Execute="deferred"
           Return="check"
 Impersonate="no"
          ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" InstallROCm' />
 
     <CustomAction Id="InstallPyTorch"
-          Execute="deferred"
-Return="check"
+                  BinaryKey="WixCA"
+                  DllEntry="CAQuietExec"
+         Execute="deferred"
+          Return="check"
            Impersonate="no"
          ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" InstallPyTorch' />
 
     <CustomAction Id="ValidateInstallation"
-          Execute="deferred"
+                  BinaryKey="WixCA"
+                  DllEntry="CAQuietExec"
+         Execute="deferred"
    Return="check"
         Impersonate="no"
          ExeCommand='powershell.exe -ExecutionPolicy Bypass -File "[#installer_actions_ps1]" ValidateInstallation' />
