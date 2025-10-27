@@ -4,6 +4,7 @@
     <ComponentGroup Id="PyTorchComponents">
       <ComponentRef Id="PyTorchScripts" />
       <ComponentRef Id="PythonEnvironment" />
+      <ComponentRef Id="PyTorchShortcuts" />
     </ComponentGroup>
 
     <DirectoryRef Id="ScriptsFolder">
