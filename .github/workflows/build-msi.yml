@@ -120,7 +120,7 @@ echo "Skipping code signing (certificate not configured)"
           After installation, open WSL2:
           ``````bash
    wsl -d Ubuntu-22.04
-      rocminfo
+      ROCminfo
           python3 -c "import torch; print(torch.cuda.is_available())"
      ``````
           
@@ -136,15 +136,15 @@ echo "Skipping code signing (certificate not configured)"
           - MD5: $(Get-Content "ROCm_Installer_${{ env.VERSION }}.msi.md5" -Raw)
        
           ## Support
-   - GitHub: https://github.com/OCNGill/rOCM_Installer_Win11
-          - Issues: https://github.com/OCNGill/rOCM_Installer_Win11/issues
-          - Documentation: https://github.com/OCNGill/rOCM_Installer_Win11/blob/master/README.md
+   - GitHub: https://github.com/OCNGill/ROCm_Installer_Win11
+          - Issues: https://github.com/OCNGill/ROCm_Installer_Win11/issues
+          - Documentation: https://github.com/OCNGill/ROCm_Installer_Win11/blob/master/README.md
    "@ | Out-File -FilePath "artifacts/INSTALL_NOTES.md" -Encoding utf8
   
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
- name: rocm-installer-msi-${{ env.VERSION }}
+ name: ROCm-installer-msi-${{ env.VERSION }}
           path: artifacts/
           retention-days: 90
       
@@ -170,7 +170,7 @@ echo "Skipping code signing (certificate not configured)"
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: rocm-installer-msi-*
+          pattern: ROCm-installer-msi-*
       
       - name: Test MSI installation (dry run)
         run: |

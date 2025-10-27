@@ -54,7 +54,7 @@ Hyper-V provides a full Windows 11 VM where you can:
 
 ```powershell
 # Navigate to repository
-cd C:\Users\steph\source\repos\OCNGill\rOCM_Installer_Win11
+cd C:\Users\steph\source\repos\OCNGill\ROCm_Installer_Win11
 
 # Run VM setup script
 .\testing\vm_setup_hyperv.ps1
@@ -197,7 +197,7 @@ vmconnect localhost "ROCm_Test_VM"
 # On host machine
 
 # Copy MSI to VM
-$msiPath = "C:\Users\steph\source\repos\OCNGill\rOCM_Installer_Win11\bin\Release\ROCm_Installer_Win11_v1.0.0.0.msi"
+$msiPath = "C:\Users\steph\source\repos\OCNGill\ROCm_Installer_Win11\bin\Release\ROCm_Installer_Win11_v1.0.0.0.msi"
 $vmName = "ROCm_Test_VM"
 $vmDestination = "C:\Users\tester\Desktop\"
 
@@ -332,7 +332,7 @@ foreach ($regPath in $regPaths) {
 
 # Test 3: Check environment variables
 Write-Host "`n[3] Environment Variables:" -ForegroundColor Yellow
-$envVars = @('PATH', 'ROCM_PATH', 'HSA_PATH')
+$envVars = @('PATH', 'ROCm_PATH', 'HSA_PATH')
 foreach ($var in $envVars) {
     $value = [Environment]::GetEnvironmentVariable($var, 'Machine')
     if ($value -like "*ROCm*" -or $value -like "*AMD*") {
@@ -355,7 +355,7 @@ wsl --list --verbose
 # Test 6: Test WSL ROCm (if WSL was installed)
 if (wsl --list | Select-String "Ubuntu") {
     Write-Host "`n[6] ROCm in WSL:" -ForegroundColor Yellow
-    wsl -d Ubuntu-22.04 -e bash -c "if command -v rocminfo &> /dev/null; then echo '? rocminfo available'; rocminfo | head -20; else echo '? rocminfo not found'; fi"
+    wsl -d Ubuntu-22.04 -e bash -c "if command -v ROCminfo &> /dev/null; then echo '? ROCminfo available'; ROCminfo | head -20; else echo '? ROCminfo not found'; fi"
 }
 
 # Test 7: Check services
@@ -452,7 +452,7 @@ Windows Sandbox is perfect for:
 New-Item -Path "F:\ROCm_VM_Testing\Sandbox_TestResults" -ItemType Directory -Force
 
 # Build your MSI if not already built
-cd C:\Users\steph\source\repos\OCNGill\rOCM_Installer_Win11
+cd C:\Users\steph\source\repos\OCNGill\ROCm_Installer_Win11
 .\build_installer.ps1 -Configuration Release
 
 # Verify MSI exists
@@ -468,10 +468,10 @@ if (Test-Path $msiPath) {
 
 ```powershell
 # Double-click the WSB file
-Start-Process "C:\Users\steph\source\repos\OCNGill\rOCM_Installer_Win11\testing\ROCm_Installer_Sandbox.wsb"
+Start-Process "C:\Users\steph\source\repos\OCNGill\ROCm_Installer_Win11\testing\ROCm_Installer_Sandbox.wsb"
 
 # Or from command line
-& "C:\Users\steph\source\repos\OCNGill\rOCM_Installer_Win11\testing\ROCm_Installer_Sandbox.wsb"
+& "C:\Users\steph\source\repos\OCNGill\ROCm_Installer_Win11\testing\ROCm_Installer_Sandbox.wsb"
 ```
 
 **What happens:**
@@ -612,7 +612,7 @@ if ($latestLog) {
 
 ### Functional Tests
 - [ ] WSL can be launched
-- [ ] `rocminfo` command works in WSL
+- [ ] `ROCminfo` command works in WSL
 - [ ] GPU detected in WSL
 - [ ] Python packages accessible
 - [ ] Sample code runs without errors

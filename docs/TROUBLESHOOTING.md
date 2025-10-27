@@ -1,9 +1,9 @@
-# ?? Troubleshooting Guide - rOCM Windows 11 Installer
+# ?? Troubleshooting Guide - ROCm Windows 11 Installer
 
 ## Table of Contents
 1. [Pre-Installation Issues](#pre-installation-issues)
 2. [WSL2 Problems](#wsl2-problems)
-3. [ROCm Installation Issues](#rocm-installation-issues)
+3. [ROCm Installation Issues](#ROCm-installation-issues)
 4. [PyTorch Problems](#pytorch-problems)
 5. [GPU Detection Issues](#gpu-detection-issues)
 6. [Performance Problems](#performance-problems)
@@ -177,14 +177,14 @@
 
 3. Run with verbose logging:
    ```bash
-   sudo amdgpu-install -y --usecase=wsl,rocm --no-dkms 2>&1 | tee install.log
+   sudo amdgpu-install -y --usecase=wsl,ROCm --no-dkms 2>&1 | tee install.log
    ```
 
 4. Install in smaller steps:
    ```bash
    sudo apt update
-   sudo apt install -y rocm-hip-runtime
-   sudo apt install -y rocminfo
+   sudo apt install -y ROCm-hip-runtime
+   sudo apt install -y ROCminfo
    ```
 
 ### Permission Denied Errors
@@ -193,7 +193,7 @@
 **Solutions**:
 1. Ensure using sudo:
    ```bash
-   sudo amdgpu-install -y --usecase=wsl,rocm --no-dkms
+   sudo amdgpu-install -y --usecase=wsl,ROCm --no-dkms
    ```
 
 2. Check file permissions:
@@ -233,7 +233,7 @@
 4. Download wheels manually:
    ```bash
    cd /tmp
-   wget https://repo.radeon.com/rocm/manylinux/rocm-rel-6.1.3/torch-2.1.2%2Brocm6.1.3-cp310-cp310-linux_x86_64.whl
+   wget https://repo.radeon.com/ROCm/manylinux/ROCm-rel-6.1.3/torch-2.1.2%2BROCm6.1.3-cp310-cp310-linux_x86_64.whl
    ```
 
 ### HSA Runtime Error
@@ -249,7 +249,7 @@
    ```bash
    cd $(pip3 show torch | grep Location | awk '{print $2}')/torch/lib
    sudo rm -f libhsa-runtime64.so*
-   sudo cp /opt/rocm/lib/libhsa-runtime64.so.1.2 libhsa-runtime64.so
+   sudo cp /opt/ROCm/lib/libhsa-runtime64.so.1.2 libhsa-runtime64.so
    ```
 
 3. Verify fix:
@@ -263,20 +263,20 @@
 **Solutions**:
 1. Check ROCm installation:
    ```bash
-   rocminfo
+   ROCminfo
    # Should show your GPU
    ```
 
 2. Check environment variables:
    ```bash
-   echo $PATH | grep rocm
-   echo $LD_LIBRARY_PATH | grep rocm
+   echo $PATH | grep ROCm
+   echo $LD_LIBRARY_PATH | grep ROCm
    ```
 
 3. Add to .bashrc if missing:
    ```bash
-   echo 'export PATH=$PATH:/opt/rocm/bin' >> ~/.bashrc
-   echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/rocm/lib' >> ~/.bashrc
+   echo 'export PATH=$PATH:/opt/ROCm/bin' >> ~/.bashrc
+   echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/ROCm/lib' >> ~/.bashrc
    source ~/.bashrc
    ```
 
@@ -294,8 +294,8 @@
 
 ## GPU Detection Issues
 
-### rocminfo Shows No GPU
-**Problem**: `rocminfo` doesn't list GPU
+### ROCminfo Shows No GPU
+**Problem**: `ROCminfo` doesn't list GPU
 
 **Solutions**:
 1. Check Windows GPU visibility:
@@ -321,12 +321,12 @@
 ```
 
 ### Wrong GPU Detected
-**Problem**: rocminfo shows different GPU
+**Problem**: ROCminfo shows different GPU
 
 **Solutions**:
 1. Check all GPUs:
    ```bash
-   rocminfo | grep "Marketing Name"
+   ROCminfo | grep "Marketing Name"
    ```
 
 2. Select correct GPU in PyTorch:
@@ -352,7 +352,7 @@
 
 2. Check GPU utilization:
    ```bash
- rocm-smi
+ ROCm-smi
    ```
 
 3. Optimize batch size:
@@ -372,7 +372,7 @@
 **Solutions**:
 1. Check current usage:
    ```bash
-   rocm-smi --showmeminfo vram
+   ROCm-smi --showmeminfo vram
    ```
 
 2. Reduce batch size
@@ -421,7 +421,7 @@ wsl --shutdown
 
 **Fix**:
 ```bash
-echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/rocm/lib' >> ~/.bashrc
+echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/ROCm/lib' >> ~/.bashrc
 source ~/.bashrc
 ```
 
@@ -436,20 +436,20 @@ uname -a
 lsb_release -a
 
 # ROCm info
-rocminfo > rocm_info.txt
-rocm-smi > rocm_smi.txt
+ROCminfo > ROCm_info.txt
+ROCm-smi > ROCm_smi.txt
 
 # PyTorch info
 python3 -c "import torch; print(torch.__version__); print(torch.cuda.is_available())" > pytorch_info.txt
 
 # Logs
-cat /tmp/rocm_install_*.log > installation_log.txt
+cat /tmp/ROCm_install_*.log > installation_log.txt
 ```
 
 ### Where to Get Help
 1. **Check installation logs**: `logs/` directory
-2. **AMD ROCm Documentation**: https://rocm.docs.amd.com/
-3. **GitHub Issues**: https://github.com/OCNGill/rOCM_Installer_Win11/issues
+2. **AMD ROCm Documentation**: https://ROCm.docs.amd.com/
+3. **GitHub Issues**: https://github.com/OCNGill/ROCm_Installer_Win11/issues
 4. **AMD Community Forums**: https://community.amd.com/
 5. **Reddit r/ROCm**: https://www.reddit.com/r/ROCm/
 

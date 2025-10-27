@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <ComponentGroup Id="WSL2Components">
+      <ComponentRef Id="WSL2Config" />
+      <ComponentRef Id="WSL2Shortcuts" />
+    </ComponentGroup>
+
+    <DirectoryRef Id="INSTALLFOLDER">
+    <Directory Id="WSL2Folder" Name="wsl2">
+   <Component Id="WSL2Config" Guid="{M3N4O5P6-Q7R8-9012-MNOP-123456789012}">
+          <!-- WSL configuration files -->
+       <File Id="wslconfig" Source="..\src\scripts\wsl2_setup.ps1" KeyPath="yes" />
+          
+      <!-- Registry for WSL2 -->
+ <RegistryKey Root="HKLM" Key="Software\ROCm\WSL2">
+       <RegistryValue Type="string" Name="Distribution" Value="Ubuntu-22.04" />
+    <RegistryValue Type="string" Name="Configured" Value="1" />
+          </RegistryKey>
+        </Component>
+   </Directory>
+    </DirectoryRef>
+
+    <DirectoryRef Id="ApplicationProgramsFolder">
+      <Component Id="WSL2Shortcuts" Guid="{N4O5P6Q7-R8S9-0123-NOPQ-234567890123}">
+      <Shortcut Id="WSLTerminalShortcut"
+Name="ROCm WSL Terminal"
+     Description="Open Ubuntu terminal with ROCm environment"
+      Target="[WindowsFolder]System32\wsl.exe"
+      Arguments="-d Ubuntu-22.04"
+    WorkingDirectory="INSTALLFOLDER" />
+
+      <RemoveFolder Id="RemoveWSL2Shortcuts" On="uninstall" />
+        <RegistryValue Root="HKCU" 
+                Key="Software\ROCm\WSL2" 
+      Name="shortcuts" 
+            Type="integer" 
+    Value="1" 
+     KeyPath="yes" />
+</Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

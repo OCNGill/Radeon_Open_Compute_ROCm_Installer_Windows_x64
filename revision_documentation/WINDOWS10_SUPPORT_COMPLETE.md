@@ -143,7 +143,7 @@ All changes successfully implemented and pushed to `full_msi_installer` branch.
 
 **Remote**: Pushed to GitHub ?
 ```
-https://github.com/OCNGill/rOCM_Installer_Win11/tree/full_msi_installer
+https://github.com/OCNGill/ROCm_Installer_Win11/tree/full_msi_installer
 ```
 
 ---
@@ -206,7 +206,7 @@ notepad install_win10.log
 msiexec /i "bin\Release\ROCm_Installer_Win11.msi" /L*V install_baremetal.log
 
 # After installation, test GPU
-wsl -d Ubuntu-22.04 rocminfo
+wsl -d Ubuntu-22.04 ROCminfo
 wsl -d Ubuntu-22.04 python3 -c "import torch; print(torch.cuda.is_available())"
 ```
 
@@ -223,8 +223,8 @@ wsl -d Ubuntu-22.04 python3 -c "import torch; print(torch.cuda.is_available())"
 1. ? **Switch to 7900 XTX system**
 2. ? **Clone repository and checkout branch**
    ```bash
-   git clone https://github.com/OCNGill/rOCM_Installer_Win11.git
-   cd rOCM_Installer_Win11
+   git clone https://github.com/OCNGill/ROCm_Installer_Win11.git
+   cd ROCm_Installer_Win11
    git checkout full_msi_installer
    ```
 
@@ -350,7 +350,7 @@ Windows Home editions  ?
 ### Repository Info
 ```
 Branch: full_msi_installer
-URL: https://github.com/OCNGill/rOCM_Installer_Win11
+URL: https://github.com/OCNGill/ROCm_Installer_Win11
 Status: Pushed and ready for testing
 ```
 

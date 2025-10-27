@@ -26,7 +26,7 @@ installer/
     ??? Banner.bmp           # ? Installer banner (493x58)
   ??? Dialog.bmp                # ? Dialog background (493x312)
     ??? License.rtf # ? End User License Agreement
-    ??? rocm_icon.ico    # ? Application icon (placeholder)
+    ??? ROCm_icon.ico    # ? Application icon (placeholder)
     ??? README.md     # ? Resource guidelines
 ```
 
@@ -66,7 +66,7 @@ installer/
   - Desktop shortcuts
 
 - ? **Development Tools** (Optional)
-  - rocminfo, amd-smi
+  - ROCminfo, amd-smi
   - Diagnostic utilities
   - Start menu shortcuts
 
@@ -244,7 +244,7 @@ msiexec /x "bin\Release\ROCm_Installer_Win11.msi" /L*V uninstall.log
 wsl --list --verbose
 
 # Check ROCm
-wsl -d Ubuntu-22.04 rocminfo
+wsl -d Ubuntu-22.04 ROCminfo
 
 # Check PyTorch
 wsl -d Ubuntu-22.04 python3 -c "import torch; print(torch.cuda.is_available())"

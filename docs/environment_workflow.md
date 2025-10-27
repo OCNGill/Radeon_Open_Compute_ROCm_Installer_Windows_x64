@@ -8,7 +8,7 @@
 conda env create -f environment.yml
 
 # Activate environment
-conda activate rocm_installer_env
+conda activate ROCm_installer_env
 ```
 
 2. **Verify Installation**
@@ -25,20 +25,20 @@ conda env list
 ### Setting Up on New Machine
 1. **Clone Repository**
 ```bash
-git clone https://github.com/OCNGill/rOCM_Installer_Win11.git
-cd rOCM_Win11_installer
+git clone https://github.com/OCNGill/ROCm_Installer_Win11.git
+cd ROCm_Win11_installer
 ```
 
 2. **Create Environment**
 ```bash
 conda env create -f environment.yml
-conda activate rocm_installer_env
+conda activate ROCm_installer_env
 ```
 
 3. **Configure VS Code**
 - Press `Ctrl+Shift+P`
 - Type "Python: Select Interpreter"
-- Choose `rocm_installer_env` from the list
+- Choose `ROCm_installer_env` from the list
 
 ### Making Environment Changes
 
@@ -81,7 +81,7 @@ conda clean --all
 
 # Remove environment if needed
 conda deactivate
-conda env remove -n rocm_installer_env
+conda env remove -n ROCm_installer_env
 ```
 
 ### Troubleshooting

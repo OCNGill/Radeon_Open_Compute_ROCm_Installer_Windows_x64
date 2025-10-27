@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+   xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  
+  <?define ProductName = "AMD ROCm Windows Installer" ?>
+  <?define ProductVersion = "1.0.0.0" ?>
+  <?define ProductManufacturer = "ROCm Community" ?>
+  <?define UpgradeCode = "{12345678-1234-1234-1234-123456789012}" ?>
+  
+  <Product Id="*" 
+       Name="$(var.ProductName)" 
+      Language="1033" 
+Version="$(var.ProductVersion)" 
+       Manufacturer="$(var.ProductManufacturer)" 
+           UpgradeCode="$(var.UpgradeCode)">
+ 
+    <Package InstallerVersion="500" 
+   Compressed="yes" 
+  InstallScope="perMachine" 
+     Description="AMD ROCm Platform with PyTorch and LLM Support for Windows 10/11"
+           Comments="One-click installer for AMD GPU AI development on Windows 10 Pro and Windows 11"
+Manufacturer="$(var.ProductManufacturer)" />
+
+  <!-- Upgrade logic -->
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+  
+    <!-- Media -->
+  <MediaTemplate EmbedCab="yes" />
+
+    <!-- Detect Windows Build Number -->
+    <Property Id="WINDOWSBUILD">
+      <RegistrySearch Id="WindowsBuildSearch" 
+        Root="HKLM" 
+   Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" 
+      Name="CurrentBuildNumber" 
+             Type="raw" />
+    </Property>
+
+    <!-- Detect Windows Edition -->
+    <Property Id="WINDOWSEDITION">
+   <RegistrySearch Id="WindowsEditionSearch" 
+        Root="HKLM" 
+          Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" 
+      Name="EditionID" 
+         Type="raw" />
+    </Property>
+
+    <!-- Prerequisites -->
+    <!-- Windows 10 Pro/Enterprise/Education (Build 19041+) or Windows 11 -->
+    <Condition Message="This application requires Windows 10 Pro/Enterprise/Education (Build 19041+) or Windows 11.">
+      <![CDATA[Installed OR ((VersionNT >= 603) AND (WINDOWSBUILD >= "19041"))]]>
+    </Condition>
+
+    <!-- Check for Pro/Enterprise/Education/Server editions (required for Hyper-V) -->
+  <Condition Message="This application requires Windows Pro, Enterprise, Education, or Server edition for Hyper-V and WSL2 support. Windows Home edition is not supported.">
+      <![CDATA[Installed OR (WINDOWSEDITION = "Professional" OR WINDOWSEDITION = "ProfessionalWorkstation" OR WINDOWSEDITION = "Enterprise" OR WINDOWSEDITION = "Education" OR WINDOWSEDITION = "ServerStandard" OR WINDOWSEDITION = "ServerDatacenter")]]>
+</Condition>
+
+    <!-- Features -->
+    <Feature Id="ProductFeature" 
+   Title="AMD ROCm Complete Installation" 
+         Level="1"
+        Description="Complete ROCm platform with all components"
+        Display="expand"
+     ConfigurableDirectory="INSTALLFOLDER">
+    
+    <!-- Core ROCm Runtime -->
+      <Feature Id="ROCmRuntime" 
+Title="ROCm Runtime" 
+        Level="1"
+            Description="Core ROCm libraries and runtime (Required)"
+     AllowAdvertise="no"
+  Absent="disallow">
+      <ComponentGroupRef Id="ROCmRuntimeComponents" />
+      </Feature>
+
+      <!-- WSL2 Support -->
+      <Feature Id="WSL2Support" 
+      Title="WSL2 &amp; Ubuntu 22.04" 
+    Level="1"
+   Description="Windows Subsystem for Linux with Ubuntu (Required)"
+ AllowAdvertise="no"
+   Absent="disallow">
+   <ComponentGroupRef Id="WSL2Components" />
+      </Feature>
+
+      <!-- PyTorch -->
+   <Feature Id="PyTorch" 
+       Title="PyTorch with ROCm" 
+      Level="1"
+   Description="PyTorch 2.1.2 with ROCm 6.1.3 support (Required)"
+         AllowAdvertise="no"
+   Absent="disallow">
+        <ComponentGroupRef Id="PyTorchComponents" />
+ </Feature>
+
+      <!-- LLM GUI -->
+      <Feature Id="LLMGUI" 
+        Title="LM Studio GUI" 
+       Level="1"
+      Description="Local LLM model management interface (Recommended)"
+AllowAdvertise="no">
+      <ComponentGroupRef Id="LMStudioComponents" />
+      </Feature>
+
+      <!-- Development Tools -->
+      <Feature Id="DevTools" 
+         Title="Development Tools" 
+   Level="2"
+         Description="rocminfo, amd-smi, and diagnostic utilities (Optional)"
+     AllowAdvertise="no">
+     <ComponentGroupRef Id="DevToolsComponents" />
+      </Feature>
+
+    </Feature>
+
+    <!-- Installation Directory -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLFOLDER" Name="ROCm">
+          <Directory Id="BinFolder" Name="bin" />
+          <Directory Id="LibFolder" Name="lib" />
+  <Directory Id="ScriptsFolder" Name="scripts" />
+   <Directory Id="DocsFolder" Name="docs" />
+ </Directory>
+      </Directory>
+    
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="ApplicationProgramsFolder" Name="AMD ROCm" />
+      </Directory>
+
+<Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+
+    <!-- Custom Actions -->
+    <Binary Id="CustomActionScript" SourceFile="CustomActions\installer_actions.ps1" />
+
+    <!-- Pre-Install GPU Detection -->
+    <CustomAction Id="DetectGPU"
+                  BinaryKey="CustomActionScript"
+       Execute="immediate"
+        Return="check"
+         Impersonate="no" />
+
+    <!-- Pre-Install Driver Check -->
+    <CustomAction Id="CheckDriverVersion"
+              BinaryKey="CustomActionScript"
+        Execute="immediate"
+            Return="check"
+         Impersonate="no" />
+
+    <!-- Security Configuration -->
+    <CustomAction Id="ConfigureSecurity"
+ BinaryKey="CustomActionScript"
+  Execute="deferred"
+        Return="check"
+              Impersonate="no" />
+
+    <!-- WSL2 Installation -->
+    <CustomAction Id="InstallWSL2"
+         BinaryKey="CustomActionScript"
+ Execute="deferred"
+             Return="check"
+           Impersonate="no" />
+
+    <!-- ROCm Installation -->
+    <CustomAction Id="InstallROCm"
+         BinaryKey="CustomActionScript"
+          Execute="deferred"
+          Return="check"
+Impersonate="no" />
+
+    <!-- PyTorch Installation -->
+    <CustomAction Id="InstallPyTorch"
+          BinaryKey="CustomActionScript"
+      Execute="deferred"
+Return="check"
+           Impersonate="no" />
+
+    <!-- Post-Install Validation -->
+    <CustomAction Id="ValidateInstallation"
+          BinaryKey="CustomActionScript"
+              Execute="deferred"
+   Return="check"
+        Impersonate="no" />
+
+    <!-- Installation Sequence -->
+    <InstallExecuteSequence>
+      <!-- Pre-install checks -->
+      <Custom Action="DetectGPU" Before="LaunchConditions">NOT Installed</Custom>
+  <Custom Action="CheckDriverVersion" After="DetectGPU">NOT Installed</Custom>
+      
+      <!-- Installation steps -->
+      <Custom Action="ConfigureSecurity" After="InstallFiles">NOT Installed</Custom>
+      <Custom Action="InstallWSL2" After="ConfigureSecurity">NOT Installed AND &amp;WSL2Support=3</Custom>
+      <Custom Action="InstallROCm" After="InstallWSL2">NOT Installed AND &amp;ROCmRuntime=3</Custom>
+      <Custom Action="InstallPyTorch" After="InstallROCm">NOT Installed AND &amp;PyTorch=3</Custom>
+      
+      <!-- Post-install validation -->
+      <Custom Action="ValidateInstallation" Before="InstallFinalize">NOT Installed</Custom>
+    </InstallExecuteSequence>
+
+  <!-- UI Configuration -->
+    <UIRef Id="WixUI_FeatureTree" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <!-- Properties -->
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <Property Id="ARPPRODUCTICON" Value="ProductIcon" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/OCNGill/rOCM_Installer_Win11" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/OCNGill/rOCM_Installer_Win11/releases" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/OCNGill/rOCM_Installer_Win11/issues" />
+    
+    <!-- Icon -->
+    <Icon Id="ProductIcon" SourceFile="Resources\rocm_icon.ico" />
+
+    <!-- License -->
+ <WixVariable Id="WixUILicenseRtf" Value="Resources\License.rtf" />
+    
+    <!-- Banner images -->
+    <WixVariable Id="WixUIBannerBmp" Value="Resources\Banner.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="Resources\Dialog.bmp" />
+
+  </Product>
+</Wix>

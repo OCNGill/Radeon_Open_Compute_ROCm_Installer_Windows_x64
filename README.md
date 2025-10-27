@@ -1,8 +1,31 @@
-# rOCM Windows Installer
+# Radeon_Open_Compute_ROCm_Installer_Windows_x64 (v1.3)
+
+This repository provides a unified environment for deploying and testing AMD ROCm on Windows x64 systems.
+It consolidates Python-based workflows with Conda environments and a standalone MSI installer build system.
+
+## Repository structure
+- **docs/** — Documentation
+- **revision_documentation/** — Archived and deduplicated revision documents
+- **python_with_conda_env/** — Python-specific workflows with Conda environment
+- **ROCm_windows_installer_x64/** — MSI installer build system
+- **claude_skills_for_AI_workflows/** — Claude skills prompts for AI workflow automation
+- **testing/** — Testing environments (VM, Sandbox)
+
+---
+
+**Status as of End of Day (v1.3) - 2025-10-27:**
+
+Branches consolidated, documentation cleaned, repo renamed, Claude skills folder added, and Conda environment synchronized.
+
+**Tomorrow:** Testing begins on Gillsystems_main with Ryzen 5900X + Radeon 7900XTX. VM and Windows Sandbox are already prepared.
+
+---
+
+# ROCm Windows Installer
 ## **One-Click AMD ROCm Setup for AI & Machine Learning on Windows 10/11**
 
 [![Windows 10/11](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?style=flat&logo=windows&logoColor=white)](https://www.microsoft.com/windows)
-[![ROCm](https://img.shields.io/badge/ROCm-6.1.3-ED1C24?style=flat&logo=amd&logoColor=white)](https://rocm.docs.amd.com/)
+[![ROCm](https://img.shields.io/badge/ROCm-6.1.3-ED1C24?style=flat&logo=amd&logoColor=white)](https://ROCm.docs.amd.com/)
 [![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -30,7 +53,7 @@ The installer addresses the complex, error-prone manual installation process by 
 
 ### Core Workflow
 
-The rOCM Windows 11 Installer orchestrates a complete installation workflow:
+The ROCm Windows 11 Installer orchestrates a complete installation workflow:
 
 1. **System Compatibility Check**
    - Verifies Windows 10 Pro/Enterprise/Education (Build 19041+) or Windows 11
@@ -59,7 +82,7 @@ The rOCM Windows 11 Installer orchestrates a complete installation workflow:
    - Validates GPU detection
 
 5. **Validation & Testing**
-   - Runs `rocminfo` to verify GPU detection
+   - Runs `ROCminfo` to verify GPU detection
    - Tests PyTorch CUDA/ROCm availability
    - Creates test tensor on GPU
    - Generates installation report
@@ -120,13 +143,13 @@ The rOCM Windows 11 Installer orchestrates a complete installation workflow:
 ?  ?          ?  ?
 ?  ?  ????????????????????????????????????????????????   ?  ?
 ?  ?  ?  Bash Installation Scripts    ?   ?  ?
-?  ?  ?  - ROCm Installation (install_rocm.sh)       ?   ?  ?
+?  ?  ?  - ROCm Installation (install_ROCm.sh)       ?   ?  ?
 ?  ?  ?  - PyTorch Setup (install_pytorch.sh) ?   ?  ?
 ?  ?  ????????????????????????????????????????????????   ?  ?
 ?  ?     ?  ?
 ?  ?  ?????????????????????????????????????????????????  ?
 ?  ?  ?  ROCm Runtime Environment        ?   ?  ?
-?  ?  ?  - /opt/rocm/        ?   ?  ?
+?  ?  ?  - /opt/ROCm/        ?   ?  ?
 ?  ?  ?  - PyTorch 2.1.2 + ROCm 6.1.3     ?   ?  ?
 ?  ?  ?  - CUDA/ROCm API Layer        ?   ?  ?
 ?  ?  ????????????????????????????????????????????????   ?  ?
@@ -164,7 +187,7 @@ graph TD
 ### Project Structure
 
 ```
-rOCM_Win11_installer/
+ROCm_Win11_installer/
 ??? src/
 ?   ??? gui/
 ?   ?   ??? streamlit_app.py          # Main web interface
@@ -173,7 +196,7 @@ rOCM_Win11_installer/
 ?   ?   ??? verify_amd_compatibility.ps1 # AMD GPU/driver check
 ?   ?   ??? wsl2_setup.ps1    # WSL2 installation
 ?   ?   ??? master_installer.ps1       # Master orchestrator
-?   ?   ??? install_rocm.sh            # ROCm installation (WSL)
+?   ?   ??? install_ROCm.sh            # ROCm installation (WSL)
 ?   ?   ??? install_pytorch.sh         # PyTorch installation (WSL)
 ?   ??? utils/
 ?       ??? logging_utils.py           # Logging utilities
@@ -200,7 +223,7 @@ rOCM_Win11_installer/
 - **master_installer.ps1**: Orchestrates the entire installation process
 
 #### 3. **Bash Scripts** (`src/scripts/*.sh`)
-- **install_rocm.sh**: Installs ROCm 6.1.3 in WSL2 Ubuntu
+- **install_ROCm.sh**: Installs ROCm 6.1.3 in WSL2 Ubuntu
 - **install_pytorch.sh**: Installs PyTorch with ROCm support and fixes HSA runtime
 
 #### 4. **Logging System** (`src/utils/logging_utils.py`)
@@ -228,7 +251,7 @@ streamlit-option-menu>=0.3.6  # UI components
 
 #### Conda Environment (environment.yml)
 ```yaml
-name: rocm_installer_env
+name: ROCm_installer_env
 channels:
   - conda-forge
   - defaults
@@ -259,7 +282,7 @@ All custom code is thoroughly documented and includes:
 
 ### Code Links
 
-- [Main Repository](https://github.com/OCNGill/rOCM_Installer_Win11)
+- [Main Repository](https://github.com/OCNGill/ROCm_Installer_Win11)
 - [Streamlit GUI](src/gui/streamlit_app.py)
 - [Installation Scripts](src/scripts/)
 - [Documentation](docs/)
@@ -294,15 +317,15 @@ All custom code is thoroughly documented and includes:
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/OCNGill/rOCM_Installer_Win11.git
-   cd rOCM_Installer_Win11
+   git clone https://github.com/OCNGill/ROCm_Installer_Win11.git
+   cd ROCm_Installer_Win11
    ```
 
 2. **Set Up Python Environment**
    ```bash
    # Using Conda (recommended)
    conda env create -f environment.yml
-   conda activate rocm_installer_env
+   conda activate ROCm_installer_env
 
    # OR using pip
    pip install -r requirements.txt
@@ -332,7 +355,7 @@ All custom code is thoroughly documented and includes:
 1. **Run as Administrator**
    ```powershell
    # Open PowerShell as Administrator
-   cd rOCM_Installer_Win11\src\scripts
+   cd ROCm_Installer_Win11\src\scripts
    ```
 
 2. **Execute Master Installer**
@@ -353,7 +376,7 @@ All custom code is thoroughly documented and includes:
    wsl -d Ubuntu-22.04
 
 # Check ROCm
-   rocminfo
+   ROCminfo
 
    # Test PyTorch
    python3 -c "import torch; print(torch.cuda.is_available())"
@@ -362,7 +385,7 @@ All custom code is thoroughly documented and includes:
 2. **Install AI Frameworks** (Optional)
    ```bash
    # Inside WSL2
-   pip3 install -r ~/rocm_requirements.txt
+   pip3 install -r ~/ROCm_requirements.txt
    ```
 
 3. **Start Development**
@@ -486,9 +509,9 @@ All custom code is thoroughly documented and includes:
 ### Getting Help
 
 1. **Check Logs**: Review installation logs in `logs/` directory
-2. **AMD Documentation**: [ROCm for WSL2](https://rocm.docs.amd.com/projects/radeon/en/latest/docs/install/wsl/install-radeon.html)
+2. **AMD Documentation**: [ROCm for WSL2](https://ROCm.docs.amd.com/projects/radeon/en/latest/docs/install/wsl/install-radeon.html)
 3. **Community Forums**: [AMD Community](https://community.amd.com/)
-4. **GitHub Issues**: [Create an issue](https://github.com/OCNGill/rOCM_Installer_Win11/issues)
+4. **GitHub Issues**: [Create an issue](https://github.com/OCNGill/ROCm_Installer_Win11/issues)
 
 ---
 
@@ -519,8 +542,8 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ## Contact & Support
 
-- **GitHub**: [OCNGill/rOCM_Installer_Win11](https://github.com/OCNGill/rOCM_Installer_Win11)
-- **Issues**: [Report bugs or request features](https://github.com/OCNGill/rOCM_Installer_Win11/issues)
+- **GitHub**: [OCNGill/ROCm_Installer_Win11](https://github.com/OCNGill/ROCm_Installer_Win11)
+- **Issues**: [Report bugs or request features](https://github.com/OCNGill/ROCm_Installer_Win11/issues)
 
 ---
 

@@ -68,7 +68,7 @@ Simple script to commit everything to your repository
 
 ```powershell
 # 1. Create the VM (one-time setup)
-cd C:\Users\steph\source\repos\OCNGill\rOCM_Installer_Win11
+cd C:\Users\steph\source\repos\OCNGill\ROCm_Installer_Win11
 .\testing\vm_setup_hyperv.ps1
 
 # 2. Start and connect
@@ -327,7 +327,7 @@ Now go make that installer perfect! ??
 
 ```powershell
 # Start here:
-cd C:\Users\steph\source\repos\OCNGill\rOCM_Installer_Win11
+cd C:\Users\steph\source\repos\OCNGill\ROCm_Installer_Win11
 .\testing\commit_testing_files.ps1  # Commit everything
 .\testing\vm_setup_hyperv.ps1     # Create your VM
 # Then read testing/QUICK_START.md for your first test!

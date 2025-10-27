@@ -4,7 +4,7 @@
 
 ### Setup
 ```powershell
-cd C:\Users\steph\source\repos\OCNGill\rOCM_Installer_Win11
+cd C:\Users\steph\source\repos\OCNGill\ROCm_Installer_Win11
 .\testing\vm_setup_hyperv.ps1
 ```
 
@@ -52,7 +52,7 @@ wsl --list --verbose
 
 ### Build Installer
 ```powershell
-cd C:\Users\steph\source\repos\OCNGill\rOCM_Installer_Win11
+cd C:\Users\steph\source\repos\OCNGill\ROCm_Installer_Win11
 .\build_installer.ps1 -Configuration Release
 ```
 
@@ -92,7 +92,7 @@ notepad (Get-ChildItem "F:\ROCm_VM_Testing\Sandbox_TestResults\*.log" |
 - [ ] Files exist: `C:\Program Files\ROCm\`
 - [ ] Registry key: `HKLM:\SOFTWARE\AMD\ROCm`
 - [ ] WSL2 installed: `wsl --status`
-- [ ] Ubuntu available: `wsl -d Ubuntu-22.04 -e rocminfo`
+- [ ] Ubuntu available: `wsl -d Ubuntu-22.04 -e ROCminfo`
 
 ### Logs to Review
 - Installation: `install.log`

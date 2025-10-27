@@ -1,7 +1,7 @@
 ok, so we have everything loaded from the local repo - once completed remind me to merge the clean up the repos to match github.
 
 I need you to be the role of a SENIOR software developer at AMD - and Lisa Su has given this task to YOU to get this installer working for the masses.   
-In the Github repository (https://github.com/OCNGill/rOCM_Installer_Win11.git), you'll see the branch dedicated to the windows installer .msi (full_msi_installer)(https://github.com/OCNGill/rOCM_Installer_Win11.git).  So, I'm at the point on the main rig (my main PC) with (ryzen 5900x with 48 GB total RAM with radeon 7900XTX 24 GB GDDR6) that I'm ready to build the VM here for testing.  
+In the Github repository (https://github.com/OCNGill/ROCm_Installer_Win11.git), you'll see the branch dedicated to the windows installer .msi (full_msi_installer)(https://github.com/OCNGill/ROCm_Installer_Win11.git).  So, I'm at the point on the main rig (my main PC) with (ryzen 5900x with 48 GB total RAM with radeon 7900XTX 24 GB GDDR6) that I'm ready to build the VM here for testing.  
 
 VM specs:
 	1.) I'd like to set it up with 4 dedicated cores (8 threads) - 24 GB RAM and whatever disk space you 	think is appropriate.  

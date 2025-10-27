@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <ComponentGroup Id="ROCmRuntimeComponents">
+   <ComponentRef Id="ROCmScripts" />
+      <ComponentRef Id="ROCmRegistry" />
+      <ComponentRef Id="ROCmDocumentation" />
+    </ComponentGroup>
+
+    <DirectoryRef Id="ScriptsFolder">
+      <Component Id="ROCmScripts" Guid="{C3D4E5F6-G7H8-9012-CDEF-123456789012}">
+  <!-- Installation scripts -->
+      <File Id="install_rocm.sh" Source="..\src\scripts\install_rocm.sh" KeyPath="yes" />
+  <File Id="rocm_wsl2_setup.sh" Source="..\src\scripts\rocm_wsl2_setup.sh" />
+        <File Id="wsl2_setup.ps1" Source="..\src\scripts\wsl2_setup.ps1" />
+        <File Id="master_installer.ps1" Source="..\src\scripts\master_installer.ps1" />
+      </Component>
+    </DirectoryRef>
+
+<DirectoryRef Id="DocsFolder">
+  <Component Id="ROCmDocumentation" Guid="{D4E5F6G7-H8I9-0123-DEFG-234567890123}">
+        <File Id="README.md" Source="..\README.md" KeyPath="yes" />
+    <File Id="QUICKSTART.md" Source="..\QUICKSTART.md" />
+  <File Id="TROUBLESHOOTING.md" Source="..\docs\TROUBLESHOOTING.md" />
+      <File Id="USAGE_EXAMPLES.md" Source="..\docs\USAGE_EXAMPLES.md" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="TARGETDIR">
+ <Component Id="ROCmRegistry" Guid="{E5F6G7H8-I9J0-1234-EFGH-345678901234}">
+    <!-- Registry keys for ROCm installation -->
+        <RegistryKey Root="HKLM" Key="Software\ROCm">
+  <RegistryValue Type="string" Name="InstallPath" Value="[INSTALLFOLDER]" KeyPath="yes" />
+    <RegistryValue Type="string" Name="Version" Value="6.1.3" />
+   <RegistryValue Type="string" Name="WSLDistribution" Value="Ubuntu-22.04" />
+  <RegistryValue Type="string" Name="InstallDate" Value="[Date]" />
+        </RegistryKey>
+   
+        <!-- Uninstall registry entries -->
+    <RegistryKey Root="HKLM" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductCode]">
+        <RegistryValue Type="string" Name="DisplayName" Value="AMD ROCm Windows 11 Installer" />
+       <RegistryValue Type="string" Name="DisplayVersion" Value="[ProductVersion]" />
+          <RegistryValue Type="string" Name="Publisher" Value="ROCm Community" />
+   <RegistryValue Type="string" Name="URLInfoAbout" Value="https://github.com/OCNGill/rOCM_Installer_Win11" />
+<RegistryValue Type="string" Name="DisplayIcon" Value="[INSTALLFOLDER]rocm_icon.ico" />
+<RegistryValue Type="integer" Name="NoModify" Value="1" />
+          <RegistryValue Type="integer" Name="NoRepair" Value="1" />
+        </RegistryKey>
+</Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

@@ -1,4 +1,4 @@
-# ?? Quick Start Guide - rOCM Windows 11 Installer
+# ?? Quick Start Guide - ROCm Windows 11 Installer
 
 ## TL;DR - Get Running in 5 Minutes
 
@@ -10,10 +10,10 @@
 
 ### Step 2: Clone & Setup (2 minutes)
 ```bash
-git clone https://github.com/OCNGill/rOCM_Installer_Win11.git
-cd rOCM_Installer_Win11
+git clone https://github.com/OCNGill/ROCm_Installer_Win11.git
+cd ROCm_Installer_Win11
 conda env create -f environment.yml
-conda activate rocm_installer_env
+conda activate ROCm_installer_env
 ```
 
 ### Step 3: Launch Installer (30 seconds)
@@ -37,7 +37,7 @@ streamlit run src/gui/streamlit_app.py
 
 ```powershell
 # Run as Administrator
-cd rOCM_Installer_Win11\src\scripts
+cd ROCm_Installer_Win11\src\scripts
 .\master_installer.ps1 -AutoYes
 ```
 
@@ -61,7 +61,7 @@ cd rOCM_Installer_Win11\src\scripts
 wsl -d Ubuntu-22.04
 
 # Check ROCm
-rocminfo
+ROCminfo
 
 # Test PyTorch
 python3 -c "import torch; print(f'GPU Available: {torch.cuda.is_available()}')"
@@ -92,7 +92,7 @@ pip install transformers accelerate datasets
 ### For General ML
 ```bash
 # Use the generated requirements template
-pip install -r ~/rocm_requirements.txt
+pip install -r ~/ROCm_requirements.txt
 ```
 
 ---
@@ -111,7 +111,7 @@ pip install -r ~/rocm_requirements.txt
 ## Support
 
 - ?? Full Documentation: [README.md](README.md)
-- ?? Report Issues: [GitHub Issues](https://github.com/OCNGill/rOCM_Installer_Win11/issues)
+- ?? Report Issues: [GitHub Issues](https://github.com/OCNGill/ROCm_Installer_Win11/issues)
 - ?? Community: [AMD Forums](https://community.amd.com/)
 
 ---

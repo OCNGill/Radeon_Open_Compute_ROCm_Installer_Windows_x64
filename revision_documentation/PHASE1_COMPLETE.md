@@ -44,7 +44,7 @@ Created complete installer directory structure with:
 | **WSL2 & Ubuntu** | Required | WSL config, shortcuts |
 | **PyTorch** | Required | Python env, PyTorch, validation |
 | **LM Studio GUI** | Optional | Streamlit, LM Studio links, shortcuts |
-| **Dev Tools** | Optional | rocminfo, amd-smi, diagnostics |
+| **Dev Tools** | Optional | ROCminfo, amd-smi, diagnostics |
 
 #### ? Custom Actions
 
@@ -149,7 +149,7 @@ Success Rate: 100%
 ## ?? Project Structure
 
 ```
-rOCM_Win11_installer/
+ROCm_Win11_installer/
 ??? installer/
 ?   ??? Product.wxs          # ? Main product definition
 ?   ??? ROCmInstaller.wixproj      # ? WiX project file
@@ -169,7 +169,7 @@ rOCM_Win11_installer/
 ?       ??? Banner.bmp             # ? Installer banner
 ?       ??? Dialog.bmp    # ? Dialog background
 ?       ??? License.rtf      # ? EULA
-?       ??? rocm_icon.ico   # ? App icon
+?       ??? ROCm_icon.ico   # ? App icon
 ?       ??? README.md        # ? Resource guide
 ??? build_installer.ps1            # ? Build automation
 ??? test_phase1.ps1            # ? Validation tests
@@ -280,7 +280,7 @@ msiexec /x "bin\Release\ROCm_Installer_Win11.msi" /L*V uninstall.log
 wsl --list --verbose
 
 # Check ROCm (in WSL)
-wsl -d Ubuntu-22.04 rocminfo
+wsl -d Ubuntu-22.04 ROCminfo
 
 # Check PyTorch (in WSL)
 wsl -d Ubuntu-22.04 python3 -c "import torch; print(torch.cuda.is_available())"
@@ -357,10 +357,10 @@ This installer is ready for:
 
 ## ?? Support & Resources
 
-- **GitHub Repository**: https://github.com/OCNGill/rOCM_Installer_Win11
-- **Issues**: https://github.com/OCNGill/rOCM_Installer_Win11/issues
+- **GitHub Repository**: https://github.com/OCNGill/ROCm_Installer_Win11
+- **Issues**: https://github.com/OCNGill/ROCm_Installer_Win11/issues
 - **WiX Documentation**: https://wixtoolset.org/documentation/
-- **AMD ROCm Docs**: https://rocm.docs.amd.com/
+- **AMD ROCm Docs**: https://ROCm.docs.amd.com/
 
 ---
 

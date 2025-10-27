@@ -505,9 +505,9 @@ with torch.cuda.profiler.profile():
 
 ## ?? Additional Resources
 
-- [PyTorch ROCm Documentation](https://rocm.docs.amd.com/projects/radeon/en/latest/docs/install/wsl/install-pytorch.html)
+- [PyTorch ROCm Documentation](https://ROCm.docs.amd.com/projects/radeon/en/latest/docs/install/wsl/install-pytorch.html)
 - [Hugging Face with ROCm](https://huggingface.co/docs/transformers/main/en/perf_train_gpu_one)
-- [AMD ROCm Blog](https://rocm.blogs.amd.com/)
+- [AMD ROCm Blog](https://ROCm.blogs.amd.com/)
 - [ROCm Examples GitHub](https://github.com/ROCmSoftwarePlatform)
 
 ---

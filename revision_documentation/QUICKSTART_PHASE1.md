@@ -114,7 +114,7 @@ msiexec /i "path\to\installer.msi" /qn /L*V install.log
 wsl --list --verbose
 
 # Check ROCm
-wsl -d Ubuntu-22.04 rocminfo
+wsl -d Ubuntu-22.04 ROCminfo
 
 # Check PyTorch
 wsl -d Ubuntu-22.04 python3 -c "import torch; print(torch.cuda.is_available())"

@@ -130,7 +130,7 @@ $requiredResources = @(
     "installer\Resources\License.rtf",
  "installer\Resources\Banner.bmp",
     "installer\Resources\Dialog.bmp",
-    "installer\Resources\rocm_icon.ico"
+    "installer\Resources\ROCm_icon.ico"
 )
 
 foreach ($resource in $requiredResources) {
