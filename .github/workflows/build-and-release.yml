@@ -191,15 +191,33 @@ jobs:
         asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi.md5
         asset_content_type: text/plain
 
+    - name: Debug - List directory structure
+      shell: powershell
+      run: |
+        Write-Host "Repository root contents:"
+        Get-ChildItem -Path . -Recurse -Depth 3 | Select-Object FullName
+        Write-Host "`nROCm_windows_installer_x64 contents:"
+        Get-ChildItem -Path ROCm_windows_installer_x64 -Recurse -Depth 2 | Select-Object FullName
+        Write-Host "`nChecking for src/scripts:"
+        if (Test-Path "ROCm_windows_installer_x64/src/scripts") {
+          Get-ChildItem -Path "ROCm_windows_installer_x64/src/scripts" | Select-Object FullName
+        } else {
+          Write-Host "ROCm_windows_installer_x64/src/scripts does not exist!"
+        }
+
     - name: Ensure scripts are in build context
       shell: powershell
       run: |
         Write-Host "Copying scripts to build context..."
         $src = "ROCm_windows_installer_x64/src/scripts"
-        $dst = "ROCm_windows_installer_x64/src/scripts"
-        if (!(Test-Path $dst)) { New-Item -ItemType Directory -Path $dst -Force | Out-Null }
-        Copy-Item -Path "$src/*" -Destination $dst -Recurse -Force
-        # Also copy to build root if needed for WiX context
-        $dst2 = "ROCm_windows_installer_x64/Components/../src/scripts"
-        if (!(Test-Path $dst2)) { New-Item -ItemType Directory -Path $dst2 -Force | Out-Null }
-        Copy-Item -Path "$src/*" -Destination $dst2 -Recurse -Force
+        if (!(Test-Path $src)) {
+          Write-Host "Source directory $src does not exist! Creating it..."
+          New-Item -ItemType Directory -Path $src -Force | Out-Null
+        }
+        # Copy the committed scripts if they exist elsewhere
+        if (Test-Path "src/scripts") {
+          Copy-Item -Path "src/scripts/*" -Destination $src -Recurse -Force
+          Write-Host "Copied from src/scripts to $src"
+        }
+        Write-Host "Contents of $src after copy:"
+        if (Test-Path $src) { Get-ChildItem -Path $src | Select-Object FullName }
