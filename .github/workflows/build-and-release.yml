@@ -221,3 +221,13 @@ jobs:
         }
         Write-Host "Contents of $src after copy:"
         if (Test-Path $src) { Get-ChildItem -Path $src | Select-Object FullName }
+
+    - name: Ensure scripts are in build context for WiX
+      shell: powershell
+      run: |
+        $target = "ROCm_windows_installer_x64/src/scripts"
+        if (!(Test-Path $target)) { New-Item -ItemType Directory -Path $target -Force | Out-Null }
+        Copy-Item -Path "ROCm_windows_installer_x64/src/scripts/rocm_wsl2_setup.sh" -Destination $target -Force
+        Copy-Item -Path "ROCm_windows_installer_x64/src/scripts/check_amd_driver.ps1" -Destination $target -Force
+        Write-Host "Contents of $target:"
+        Get-ChildItem -Path $target | Select-Object FullName
