@@ -250,3 +250,5 @@ Write-ColorOutput "4. Reboot if prompted" "White"
 Write-ColorOutput "`nFor testing, you can also run:" "Yellow"
 Write-ColorOutput " msiexec /i `"$msiFile`" /L*V install.log" "Gray"
 Write-ColorOutput "==========================================`n" "Cyan"
+
+Write-Host "Reached end of script"

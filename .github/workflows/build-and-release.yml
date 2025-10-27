@@ -18,7 +18,6 @@ jobs:
       shell: powershell
       run: |
         Write-Host "Checking for WiX Toolset..." -ForegroundColor Cyan
-        # Look for the WiX candle.exe (part of WiX) in PATH or common install locations
         $found = Get-Command candle.exe -ErrorAction SilentlyContinue
         if (-not $found) {
           Write-Host "WiX Toolset not found. Installing via Chocolatey..." -ForegroundColor Cyan
