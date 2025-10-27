@@ -1,3 +1,5 @@
+# Improvements: use Start-Process to capture exit codes and show stdout/stderr from candle/light for easier CI debugging
+# Improve installer directory detection and fix exit code typos
 # Build ROCm Windows Installer
 # This script compiles the WiX installer project
 
@@ -20,64 +22,80 @@ Write-ColorOutput "`n===== Building ROCm Windows Installer =====" "Cyan"
 Write-ColorOutput "Configuration: $Configuration" "Yellow"
 Write-ColorOutput "Version: $Version" "Yellow"
 
-# Check if WiX is installed
-$wixPath = "C:\Program Files (x86)\WiX Toolset v3.11\bin"
-if (-not (Test-Path $wixPath)) {
-    $wixPath = "C:\Program Files (x86)\WiX Toolset v3.14\bin"
+# Try to find candle.exe and light.exe in PATH first
+$candleCmd = Get-Command candle.exe -ErrorAction SilentlyContinue
+$lightCmd = Get-Command light.exe -ErrorAction SilentlyContinue
+
+# If not found, try common WiX install locations (including Chocolatey path)
+if (-not $candleCmd) {
+    $possible = @(
+                   "C:\Program Files (x86)\WiX Toolset v3.11\bin\candle.exe",
+                   "C:\Program Files (x86)\WiX Toolset v3.14\bin\candle.exe",
+                   "C:\Program Files\WiX Toolset v3.11\bin\candle.exe",
+                   "C:\ProgramData\chocolatey\lib\wixtoolset\tools\wix\bin\candle.exe"
+ )
+    foreach ($p in $possible) { if (Test-Path $p) { $candleCmd = $p; break } }
+}
+if (-not $lightCmd) {
+    $possible = @(
+                   "C:\Program Files (x86)\WiX Toolset v3.11\bin\light.exe",
+                   "C:\Program Files (x86)\WiX Toolset v3.14\bin\light.exe",
+                   "C:\Program Files\WiX Toolset v3.11\bin\light.exe",
+                   "C:\ProgramData\chocolatey\lib\wixtoolset\tools\wix\bin\light.exe"
+ )
+    foreach ($p in $possible) { if (Test-Path $p) { $lightCmd = $p; break } }
 }
 
-if (-not (Test-Path $wixPath)) {
-    Write-ColorOutput "WARNING: WiX Toolset not found in common locations. Relying on system PATH or CI runner." "Yellow"
-} else {
-    Write-ColorOutput "WiX Toolset found at: $wixPath" "Green"
-    # Add WiX to PATH for this session
-    $env:Path = "$wixPath;$env:Path"
+if (-not $candleCmd -or -not $lightCmd) {
+    Write-ColorOutput "ERROR: candle.exe or light.exe not found. Ensure WiX is installed or available in PATH." "Red"
+    Write-ColorOutput "Found candle: $candleCmd" "Gray"
+    Write-ColorOutput "Found light: $lightCmd" "Gray"
+    exit 1
 }
+
+# Normalize to executable paths
+$candleExe = if ($candleCmd -is [System.Management.Automation.CommandInfo]) { $candleCmd.Source } else { $candleCmd }
+$lightExe = if ($lightCmd -is [System.Management.Automation.CommandInfo]) { $lightCmd.Source } else { $lightCmd }
+
+Write-ColorOutput "Using candle: $candleExe" "Green"
+Write-ColorOutput "Using light: $lightExe" "Green"
 
 # Navigate to installer directory
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-# Determine where the WiX source files live. Support two layouts:
-#1) $scriptDir\installer\Product.wxs (old layout)
-#2) $scriptDir\Product.wxs (current layout)
-
-$installerDirCandidate1 = Join-Path $scriptDir "installer"
-$installerDirCandidate2 = $scriptDir
+# Determine where the WiX source files live. Support multiple layouts by searching several likely locations
+$installerCandidates = @(
+ Join-Path $scriptDir "installer",
+ $scriptDir,
+ Join-Path $scriptDir "..\installer",
+ Join-Path $scriptDir "..",
+ Join-Path $scriptDir "..\..\installer",
+ Join-Path $scriptDir "..\.."
+)
 $installerDir = $null
+foreach ($cand in $installerCandidates) {
+ try {
+ $candPath = Resolve-Path -Path $cand -ErrorAction SilentlyContinue
+ if ($candPath -and Test-Path (Join-Path $cand "Product.wxs")) {
+ $installerDir = (Get-Item $cand).FullName
+ break
+ }
+ } catch { }
+}
 
-if (Test-Path (Join-Path $installerDirCandidate1 "Product.wxs")) {
-    $installerDir = $installerDirCandidate1
-} elseif (Test-Path (Join-Path $installerDirCandidate2 "Product.wxs")) {
-    $installerDir = $installerDirCandidate2
-} else {
-    # If no Product.wxs found, create installer folder and attempt to move WiX sources if present
-    Write-ColorOutput "No Product.wxs found in expected locations. Attempting to create installer directory and locate WiX sources..." "Yellow"
-    New-Item -ItemType Directory -Path $installerDirCandidate1 -Force | Out-Null
-    $installerDir = $installerDirCandidate1
+# Fallback: search repository tree for any Product.wxs if not found yet
+if (-not $installerDir) {
+ Write-ColorOutput "Product.wxs not found in expected candidates. Searching repository for Product.wxs..." "Yellow"
+ $found = Get-ChildItem -Path (Join-Path $scriptDir "..") -Filter Product.wxs -Recurse -ErrorAction SilentlyContinue | Select-Object -First1
+ if ($found) {
+ $installerDir = $found.Directory.FullName
+ Write-ColorOutput "Found Product.wxs at: $($found.FullName)" "Gray"
+ }
+}
 
-    # Move known WiX source files if they exist at script root
-    $toMove = @('Product.wxs', '*.wixproj', 'Components', 'CustomActions', 'Resources')
-    foreach ($item in $toMove) {
-        $matches = Get-ChildItem -Path $scriptDir -Filter $item -Recurse -Force -ErrorAction SilentlyContinue
-        foreach ($m in $matches) {
-            try {
-                $dest = Join-Path $installerDir $m.Name
-                if ($m.PSIsContainer) {
-                    Copy-Item -Path $m.FullName -Destination $dest -Recurse -Force
-                } else {
-                    Copy-Item -Path $m.FullName -Destination $installerDir -Force
-                }
-                Write-ColorOutput "Moved $($m.FullName) -> $dest" "Gray"
-            } catch {
-                Write-ColorOutput "Warning: failed to move $($m.FullName): $_" "Yellow"
-            }
-        }
-    }
-
-    if (-not (Test-Path (Join-Path $installerDir "Product.wxs"))) {
-        Write-ColorOutput "ERROR: Could not locate Product.wxs. Please ensure WiX source files are present in $installerDir or $scriptDir." "Red"
-        exit1
-    }
+if (-not $installerDir -or -not (Test-Path (Join-Path $installerDir "Product.wxs"))) {
+ Write-ColorOutput "ERROR: Could not locate Product.wxs. Please ensure WiX source files are present." "Red"
+ exit 1
 }
 
 Write-ColorOutput "Installer directory: $installerDir" "Gray"
@@ -88,15 +106,15 @@ $objDir = Join-Path $installerDir "obj\$Configuration"
 
 # Clean if requested
 if ($Clean) {
-    Write-ColorOutput "`nCleaning build directories..." "Yellow"
-    if (Test-Path $objDir) {
+ Write-ColorOutput "`nCleaning build directories..." "Yellow"
+ if (Test-Path $objDir) {
  Remove-Item $objDir -Recurse -Force
-        Write-ColorOutput " Cleaned: $objDir" "Gray"
-    }
-    if (Test-Path $outputDir) {
-        Remove-Item $outputDir -Recurse -Force
-     Write-ColorOutput " Cleaned: $outputDir" "Gray"
-  }
+ Write-ColorOutput " Cleaned: $objDir" "Gray"
+ }
+ if (Test-Path $outputDir) {
+ Remove-Item $outputDir -Recurse -Force
+ Write-ColorOutput " Cleaned: $outputDir" "Gray"
+ }
 }
 
 # Create output directories
@@ -105,52 +123,68 @@ if (-not (Test-Path $outputDir)) { New-Item -ItemType Directory -Path $outputDir
 
 # List of WiX source files (relative to installerDir)
 $wixFiles = @(
-    "Product.wxs",
-    "Components\Driver.wxs",
-    "Components\ROCm.wxs",
-    "Components\WSL2.wxs",
-    "Components\Python.wxs",
-    "Components\LLM_GUI.wxs"
+ "Product.wxs",
+ "Components\Driver.wxs",
+ "Components\ROCm.wxs",
+ "Components\WSL2.wxs",
+ "Components\Python.wxs",
+ "Components\LLM_GUI.wxs"
 )
 
 Write-ColorOutput "`n===== Compiling WiX Source Files =====" "Cyan"
 
 # Compile each WiX file
 $wixObjFiles = @()
+$missing = @()
 foreach ($wixFile in $wixFiles) {
-    $sourceFile = Join-Path $installerDir $wixFile
-    $objFile = Join-Path $objDir ([System.IO.Path]::GetFileNameWithoutExtension($wixFile) + ".wixobj")
+ $sourceFile = Join-Path $installerDir $wixFile
+ $objFile = Join-Path $objDir ([System.IO.Path]::GetFileNameWithoutExtension($wixFile) + ".wixobj")
 
-    if (-not (Test-Path $sourceFile)) {
-      Write-ColorOutput "WARNING: Source file not found: $sourceFile" "Yellow"
-        continue
-    }
-    
-    Write-ColorOutput "Compiling: $wixFile" "Gray"
-    
-  $candleArgs = @(
- $sourceFile,
-        "-dProductVersion=$Version",
-    "-dConfiguration=$Configuration",
-      "-ext", "WixUIExtension",
-     "-ext", "WixUtilExtension",
-"-arch", "x64",
-        "-out", $objFile
-    )
-    
-  if ($Verbose) {
-      $candleArgs += "-v"
-    }
-    
-    & candle.exe $candleArgs
-    
-    if ($LASTEXITCODE -ne 0) {
-        Write-ColorOutput "ERROR: Compilation failed for $wixFile" "Red"
-     exit $LASTEXITCODE
-    }
-    
-  $wixObjFiles += $objFile
+ if (-not (Test-Path $sourceFile)) {
+ Write-ColorOutput "WARNING: Source file not found: $sourceFile" "Yellow"
+ $missing += $sourceFile
+ continue
+ }
+
+ Write-ColorOutput "Compiling: $wixFile" "Gray"
+
+ $argList = "-out `"$objFile`" -dProductVersion=$Version -dConfiguration=$Configuration -ext WixUIExtension -ext WixUtilExtension -arch x64 `"$sourceFile`""
+ if ($Verbose) { $argList += " -v" }
+
+ Write-ColorOutput "Running: $candleExe $argList" "Gray"
+
+ $stdout = [System.IO.Path]::Combine($env:TEMP, "candle_stdout.txt")
+ $stderr = [System.IO.Path]::Combine($env:TEMP, "candle_stderr.txt")
+ if (Test-Path $stdout) { Remove-Item $stdout -Force }
+ if (Test-Path $stderr) { Remove-Item $stderr -Force }
+
+ $proc = Start-Process -FilePath $candleExe -ArgumentList $argList -NoNewWindow -Wait -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+
+ # Dump outputs for CI logs
+ if (Test-Path $stdout) { Get-Content $stdout | ForEach-Object { Write-Host $_ } }
+ if (Test-Path $stderr) { Get-Content $stderr | ForEach-Object { Write-Host $_ } }
+
+ if ($proc.ExitCode -ne0) {
+ Write-ColorOutput "ERROR: Compilation failed for $wixFile (exit code $($proc.ExitCode))" "Red"
+ exit $proc.ExitCode
+ }
+
+ if (-not (Test-Path $objFile)) {
+ Write-ColorOutput "ERROR: Expected .wixobj not found after compiling $wixFile: $objFile" "Red"
+ exit 1
+ }
+
+ $wixObjFiles += $objFile
 }
+
+if ($wixObjFiles.Count -eq0) {
+ Write-ColorOutput "ERROR: No .wixobj files were generated. Missing source files:" "Red"
+ foreach ($m in $missing) { Write-ColorOutput " - $m" "Red" }
+ exit 1
+}
+
+Write-ColorOutput "Generated .wixobj files:" "Gray"
+foreach ($f in $wixObjFiles) { Write-ColorOutput " - $f" "Gray" }
 
 Write-ColorOutput "`n===== Linking MSI Package =====" "Cyan"
 
@@ -158,30 +192,31 @@ $msiFile = Join-Path $outputDir "ROCm_Installer_Win11_v$Version.msi"
 
 if (Test-Path $msiFile) { Remove-Item $msiFile -Force }
 
-$lightArgs = @(
-    $wixObjFiles,
-    "-ext", "WixUIExtension",
-    "-ext", "WixUtilExtension",
-    "-out", $msiFile,
-    "-sval",
-    "-spdb"
-)
+$lightArgList = "-ext WixUIExtension -ext WixUtilExtension -out `"$msiFile`""
+foreach ($o in $wixObjFiles) { $lightArgList += " `"$o`"" }
+if ($Verbose) { $lightArgList += " -v" }
 
-if ($Verbose) {
-    $lightArgs += "-v"
-}
+Write-ColorOutput "Running: $lightExe $lightArgList" "Gray"
 
-& light.exe $lightArgs
+$stdoutL = [System.IO.Path]::Combine($env:TEMP, "light_stdout.txt")
+$stderrL = [System.IO.Path]::Combine($env:TEMP, "light_stderr.txt")
+if (Test-Path $stdoutL) { Remove-Item $stdoutL -Force }
+if (Test-Path $stderrL) { Remove-Item $stderrL -Force }
 
-if ($LASTEXITCODE -ne 0) {
-    Write-ColorOutput "ERROR: Linking failed" "Red"
- exit $LASTEXITCODE
+$procLight = Start-Process -FilePath $lightExe -ArgumentList $lightArgList -NoNewWindow -Wait -PassThru -RedirectStandardOutput $stdoutL -RedirectStandardError $stderrL
+
+if (Test-Path $stdoutL) { Get-Content $stdoutL | ForEach-Object { Write-Host $_ } }
+if (Test-Path $stderrL) { Get-Content $stderrL | ForEach-Object { Write-Host $_ } }
+
+if ($procLight.ExitCode -ne0) {
+ Write-ColorOutput "ERROR: Linking failed (exit code $($procLight.ExitCode))" "Red"
+ exit $procLight.ExitCode
 }
 
 # Verify MSI exists
 if (-not (Test-Path $msiFile)) {
  Write-ColorOutput "ERROR: MSI was not created at expected path: $msiFile" "Red"
- exit1
+ exit 1
 }
 
 Write-ColorOutput "`n===== Build Complete! =====" "Green"
