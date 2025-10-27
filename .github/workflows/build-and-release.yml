@@ -231,3 +231,11 @@ jobs:
         Copy-Item -Path "ROCm_windows_installer_x64/src/scripts/check_amd_driver.ps1" -Destination $target -Force
         Write-Host "Contents of $target:"
         Get-ChildItem -Path $target | Select-Object FullName
+
+    - name: Debug - List scripts directory before WiX build
+      shell: powershell
+      run: |
+        Write-Host "Listing contents of ROCm_windows_installer_x64/src/scripts before WiX build:"
+        Get-ChildItem -Path ROCm_windows_installer_x64/src/scripts | Select-Object FullName, Length
+        Write-Host "Listing contents of ROCm_windows_installer_x64/Components:"
+        Get-ChildItem -Path ROCm_windows_installer_x64/Components | Select-Object FullName, Length
