@@ -27,7 +27,7 @@
     </DirectoryRef>
 
     <DirectoryRef Id="ApplicationProgramsFolder">
-  <Component Id="DevToolsShortcuts" Guid="{B2C3D4E5-F6G7-8901-BCDE-F12345678901}">
+  <Component Id="DevToolsShortcuts" Guid="{B2C3D4E5-F6F7-4901-BCDE-F12345678901}">
 <Shortcut Id="DiagnosticsShortcut"
         Name="ROCm Diagnostics"
                   Description="Run ROCm diagnostic tools"
