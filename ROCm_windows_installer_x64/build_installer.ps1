@@ -75,9 +75,14 @@ $installerCandidates = @(
 $installerDir = $null
 foreach ($cand in $installerCandidates) {
  try {
- $candPath = Resolve-Path -Path $cand -ErrorAction SilentlyContinue
- if ($candPath -and (Test-Path (Join-Path $cand "Product.wxs"))) {
- $installerDir = (Get-Item $cand).FullName
+ # Defensive: ensure $cand is a string
+ $candStr = [string]$cand
+ Write-ColorOutput "DEBUG: Checking candidate path: $candStr" "Gray"
+ $candPath = Resolve-Path -Path $candStr -ErrorAction SilentlyContinue
+ $productWxsPath = Join-Path -Path $candStr -ChildPath "Product.wxs"
+ Write-ColorOutput "DEBUG: Product.wxs candidate: $productWxsPath" "Gray"
+ if ($candPath -and (Test-Path $productWxsPath)) {
+ $installerDir = (Get-Item $candStr).FullName
  break
  }
  } catch {
