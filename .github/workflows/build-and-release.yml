@@ -239,3 +239,16 @@ jobs:
         Get-ChildItem -Path ROCm_windows_installer_x64/src/scripts | Select-Object FullName, Length
         Write-Host "Listing contents of ROCm_windows_installer_x64/Components:"
         Get-ChildItem -Path ROCm_windows_installer_x64/Components | Select-Object FullName, Length
+
+    - name: Guarantee scripts are in place for WiX
+      shell: powershell
+      run: |
+        $target = "ROCm_windows_installer_x64/src/scripts"
+        if (!(Test-Path $target)) { New-Item -ItemType Directory -Path $target -Force | Out-Null }
+        # Search for the files anywhere in the repo and copy them to the target
+        $rocm = Get-ChildItem -Path . -Recurse -Filter "rocm_wsl2_setup.sh" | Select-Object -First1
+        $driver = Get-ChildItem -Path . -Recurse -Filter "check_amd_driver.ps1" | Select-Object -First1
+        if ($rocm) { Copy-Item -Path $rocm.FullName -Destination $target -Force }
+        if ($driver) { Copy-Item -Path $driver.FullName -Destination $target -Force }
+        Write-Host "Contents of $target after copy:"
+        Get-ChildItem -Path $target | Select-Object FullName, Length
