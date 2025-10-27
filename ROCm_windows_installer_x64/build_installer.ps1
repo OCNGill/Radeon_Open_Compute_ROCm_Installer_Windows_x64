@@ -76,15 +76,14 @@ $installerDir = $null
 foreach ($cand in $installerCandidates) {
  try {
  $candPath = Resolve-Path -Path $cand -ErrorAction SilentlyContinue
- if ($candPath -and Test-Path (Join-Path $cand "Product.wxs")) {
+ if ($candPath -and (Test-Path (Join-Path $cand "Product.wxs"))) {
  $installerDir = (Get-Item $cand).FullName
  break
  }
- }
- catch {
+ } catch {
  # Silently continue if path resolution fails
  }
-}
+} # end foreach
 
 # Fallback: search repository tree for any Product.wxs if not found yet
 if (-not $installerDir) {
