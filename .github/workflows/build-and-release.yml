@@ -14,12 +14,19 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Install WiX Toolset
+    - name: Ensure WiX Toolset is installed
       shell: powershell
       run: |
-        Write-Host "Installing WiX Toolset v3.11.2..." -ForegroundColor Cyan
-        choco install wixtoolset --version=3.11.2 -y
-        Write-Host "WiX Toolset installed successfully" -ForegroundColor Green
+        Write-Host "Checking for WiX Toolset..." -ForegroundColor Cyan
+        # Look for the WiX candle.exe (part of WiX) in PATH or common install locations
+        $found = Get-Command candle.exe -ErrorAction SilentlyContinue
+        if (-not $found) {
+          Write-Host "WiX Toolset not found. Installing via Chocolatey..." -ForegroundColor Cyan
+          choco install wixtoolset -y
+          Write-Host "WiX Toolset installed" -ForegroundColor Green
+        } else {
+          Write-Host "WiX Toolset already installed at: $($found.Path)" -ForegroundColor Green
+        }
 
     - name: Extract Version from Tag
       id: get_version
