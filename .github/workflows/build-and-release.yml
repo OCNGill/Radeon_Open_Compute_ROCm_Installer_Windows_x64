@@ -99,7 +99,7 @@ jobs:
       - name: Copy MSI to Repository Root
         shell: powershell
         run: |
-          $rootMsi = "ROCm_windows_x64_1.3.msi"
+          $rootMsi = "ROCm_windows_x64_$env:VERSION.msi"
           Copy-Item -Path "$env:MSI_PATH" -Destination $rootMsi -Force
           Write-Host "MSI copied to root: $rootMsi" -ForegroundColor Green
           echo "ROOT_MSI_PATH=$rootMsi" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
@@ -108,4 +108,39 @@ jobs:
         id: release_notes
         shell: powershell
         run: |
-          $notes = "# ROCm Windows Installer v$env:VERSION`n`nThis is a stability release that fixes numerous issues with the automated build pipeline.`n`n## ?? One-Click Installation for AMD GPUs`n`n**Download the MSI installer below and run as Administrator.**`n`n### ?? Security Notice`nThis installer is signed with a self-signed certificate for testing and community distribution.`n**Windows SmartScreen will show a warning** - this is expected for self-signed applications.`n`nTo install:`n1. Click `"More info`" on the SmartScreen warning`n2. Click `"Run anyway`"`n3. Follow the installation wizard`n`
+          $notes = "# ROCm Windows Installer v$env:VERSION`n`nThis is a stability release that fixes numerous issues with the automated build pipeline.`n`n## ?? One-Click Installation for AMD GPUs`n`n**Download the MSI installer below and run as Administrator.**`n`n### ?? Security Notice`nThis installer is signed with a self-signed certificate for testing and community distribution.`n**Windows SmartScreen will show a warning** - this is expected for self-signed applications.`n`nTo install:`n1. Click `"More info`" on the SmartScreen warning`n2. Click `"Run anyway`"`n3. Follow the installation wizard`n`n### ?? Checksums`nSHA256: $env:SHA256`nMD5: $((Get-FileHash -Path `"$env:MSI_PATH`" -Algorithm MD5).Hash)`n`n### ?? What's Included`n- ROCm runtime and drivers`n- WSL2 integration`n- Python environment with PyTorch`n- Streamlit GUI dashboard`n- LM Studio download links"
+          echo "RELEASE_NOTES<<EOF" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "$notes" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "EOF" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: ROCm Windows Installer ${{ github.ref_name }}
+          body: ${{ env.RELEASE_NOTES }}
+          draft: false
+          prerelease: false
+
+      - name: Upload MSI to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.MSI_PATH }}
+          asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi
+          asset_content_type: application/octet-stream
+
+      - name: Upload SHA256 Checksum
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.MSI_PATH }}.sha256
+          asset_name: ROCm_windows_x64_${{ env.VERSION }}.msi.sha256
+          asset_content_type: text/plainn`
