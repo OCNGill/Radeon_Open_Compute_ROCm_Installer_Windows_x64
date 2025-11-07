@@ -120,6 +120,15 @@ Write-ColorOutput "Installer directory: $installerDir" "Gray"
 $outputDir = Join-Path $scriptDir "bin\$Configuration"
 $objDir = Join-Path $installerDir "obj\$Configuration"
 
+# Change working directory to installer directory so relative Source paths in .wxs resolve correctly during linking
+$pushedLocation = $false
+try {
+    Push-Location -Path $installerDir
+    $pushedLocation = $true
+} catch {
+    Write-ColorOutput "Warning: could not change to installer directory: $installerDir. Continuing without changing location." "Yellow"
+}
+
 # Clean if requested
 if ($Clean) {
  Write-ColorOutput "`nCleaning build directories..." "Yellow"
@@ -226,6 +235,7 @@ if (Test-Path $stderrL) { Get-Content $stderrL | ForEach-Object { Write-Host $_ 
 
 if ($procLight.ExitCode -ne0) {
  Write-ColorOutput "ERROR: Linking failed (exit code $($procLight.ExitCode))" "Red"
+ if ($pushedLocation) { Pop-Location }
  exit $procLight.ExitCode
 }
 
@@ -265,3 +275,4 @@ Write-ColorOutput " msiexec /i `"$msiFile`" /L*V install.log" "Gray"
 Write-ColorOutput "==========================================`n" "Cyan"
 
 Write-Host "Reached end of script"
+if ($pushedLocation) { Pop-Location }
