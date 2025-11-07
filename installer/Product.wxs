@@ -137,52 +137,59 @@ AllowAdvertise="no">
 
     <!-- Pre-Install GPU Detection -->
     <CustomAction Id="DetectGPU"
-                  BinaryKey="CustomActionScript"
-       Execute="immediate"
-        Return="check"
-         Impersonate="no" />
+                  Directory="INSTALLFOLDER"
+                  ExeCommand="powershell.exe -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CustomActions\GPUDetection.ps1&quot;"
+                  Execute="immediate"
+                  Return="check"
+                  Impersonate="no" />
 
     <!-- Pre-Install Driver Check -->
     <CustomAction Id="CheckDriverVersion"
-              BinaryKey="CustomActionScript"
-        Execute="immediate"
-            Return="check"
-         Impersonate="no" />
+                  Directory="INSTALLFOLDER"
+                  ExeCommand="powershell.exe -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CustomActions\installer_actions.ps1&quot; -Action CheckDriver"
+                  Execute="immediate"
+                  Return="check"
+                  Impersonate="no" />
 
     <!-- Security Configuration -->
     <CustomAction Id="ConfigureSecurity"
- BinaryKey="CustomActionScript"
-  Execute="deferred"
-        Return="check"
-              Impersonate="no" />
+                  Directory="INSTALLFOLDER"
+                  ExeCommand="powershell.exe -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CustomActions\SecurityConfig.ps1&quot;"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no" />
 
     <!-- WSL2 Installation -->
     <CustomAction Id="InstallWSL2"
-         BinaryKey="CustomActionScript"
- Execute="deferred"
-             Return="check"
-           Impersonate="no" />
+                  Directory="INSTALLFOLDER"
+                  ExeCommand="powershell.exe -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CustomActions\installer_actions.ps1&quot; -Action InstallWSL2"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no" />
 
     <!-- ROCm Installation -->
     <CustomAction Id="InstallROCm"
-         BinaryKey="CustomActionScript"
-          Execute="deferred"
-          Return="check"
-Impersonate="no" />
+                  Directory="INSTALLFOLDER"
+                  ExeCommand="powershell.exe -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CustomActions\installer_actions.ps1&quot; -Action InstallROCm"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no" />
 
     <!-- PyTorch Installation -->
     <CustomAction Id="InstallPyTorch"
-          BinaryKey="CustomActionScript"
-      Execute="deferred"
-Return="check"
-           Impersonate="no" />
+                  Directory="INSTALLFOLDER"
+                  ExeCommand="powershell.exe -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CustomActions\installer_actions.ps1&quot; -Action InstallPyTorch"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no" />
 
     <!-- Post-Install Validation -->
     <CustomAction Id="ValidateInstallation"
-          BinaryKey="CustomActionScript"
-              Execute="deferred"
-   Return="check"
-        Impersonate="no" />
+                  Directory="INSTALLFOLDER"
+                  ExeCommand="powershell.exe -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CustomActions\Validation.ps1&quot;"
+                  Execute="deferred"
+                  Return="check"
+                  Impersonate="no" />
 
     <!-- Installation Sequence -->
     <InstallExecuteSequence>
