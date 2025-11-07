@@ -5,7 +5,7 @@
 
 param(
     [string]$Configuration = "Release",
-    [string]$Version = "1.6.0.0",
+    [string]$Version = "1.7.0.0",
     [switch]$Clean,
     [switch]$Verbose
 )

@@ -1,0 +1,70 @@
+Dialog_	Control_	Action	Condition
+s72	s50	s50	s255
+ControlCondition	Dialog_	Control_	Action	Condition
+CustomizeDlg	Browse	Disable	Installed
+CustomizeDlg	Browse	Hide	Installed
+CustomizeDlg	Location	Hide	Installed
+CustomizeDlg	LocationLabel	Hide	Installed
+ExitDialog	OptionalCheckBox	Show	WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT AND NOT Installed
+ExitDialog	OptionalText	Show	WIXUI_EXITDIALOGOPTIONALTEXT AND NOT Installed
+LicenseAgreementDlg	Next	Disable	LicenseAccepted <> "1"
+LicenseAgreementDlg	Next	Enable	LicenseAccepted = "1"
+MaintenanceTypeDlg	ChangeButton	Disable	ARPNOMODIFY
+MaintenanceTypeDlg	ChangeDisabledText	Show	ARPNOMODIFY
+MaintenanceTypeDlg	ChangeText	Hide	ARPNOMODIFY
+MaintenanceTypeDlg	RemoveButton	Disable	ARPNOREMOVE
+MaintenanceTypeDlg	RemoveDisabledText	Show	ARPNOREMOVE
+MaintenanceTypeDlg	RemoveText	Hide	ARPNOREMOVE
+MaintenanceTypeDlg	RepairButton	Disable	ARPNOREPAIR
+MaintenanceTypeDlg	RepairDisabledText	Show	ARPNOREPAIR
+MaintenanceTypeDlg	RepairText	Hide	ARPNOREPAIR
+ProgressDlg	TextChanging	Show	WixUI_InstallMode = "Change"
+ProgressDlg	TextInstalling	Show	NOT Installed OR (Installed AND (RESUME OR Preselected) AND NOT PATCH)
+ProgressDlg	TextRemoving	Show	WixUI_InstallMode = "Remove"
+ProgressDlg	TextRepairing	Show	WixUI_InstallMode = "Repair"
+ProgressDlg	TextUpdating	Show	WixUI_InstallMode = "Update"
+ProgressDlg	TitleChanging	Show	WixUI_InstallMode = "Change"
+ProgressDlg	TitleInstalling	Show	NOT Installed OR (Installed AND (RESUME OR Preselected) AND NOT PATCH)
+ProgressDlg	TitleRemoving	Show	WixUI_InstallMode = "Remove"
+ProgressDlg	TitleRepairing	Show	WixUI_InstallMode = "Repair"
+ProgressDlg	TitleUpdating	Show	WixUI_InstallMode = "Update"
+ResumeDlg	Install	Show	ALLUSERS
+ResumeDlg	InstallNoShield	Show	NOT ALLUSERS
+VerifyReadyDlg	Back	Default	WixUI_InstallMode = "Remove"
+VerifyReadyDlg	Change	Default	WixUI_InstallMode = "Change"
+VerifyReadyDlg	Change	Enable	WixUI_InstallMode = "Change"
+VerifyReadyDlg	Change	Show	WixUI_InstallMode = "Change" AND ALLUSERS AND (ADDLOCAL OR REMOVE)
+VerifyReadyDlg	ChangeNoShield	Default	WixUI_InstallMode = "Change"
+VerifyReadyDlg	ChangeNoShield	Enable	WixUI_InstallMode = "Change"
+VerifyReadyDlg	ChangeNoShield	Show	WixUI_InstallMode = "Change" AND (NOT ALLUSERS OR (NOT ADDLOCAL AND NOT REMOVE))
+VerifyReadyDlg	ChangeText	Show	WixUI_InstallMode = "Change"
+VerifyReadyDlg	ChangeTitle	Show	WixUI_InstallMode = "Change"
+VerifyReadyDlg	Install	Default	NOT Installed
+VerifyReadyDlg	Install	Enable	NOT Installed
+VerifyReadyDlg	Install	Show	NOT Installed AND ALLUSERS
+VerifyReadyDlg	InstallNoShield	Default	NOT Installed
+VerifyReadyDlg	InstallNoShield	Enable	NOT Installed
+VerifyReadyDlg	InstallNoShield	Show	NOT Installed AND NOT ALLUSERS
+VerifyReadyDlg	InstallText	Show	NOT Installed
+VerifyReadyDlg	InstallTitle	Show	NOT Installed
+VerifyReadyDlg	Remove	Enable	WixUI_InstallMode = "Remove"
+VerifyReadyDlg	Remove	Show	WixUI_InstallMode = "Remove" AND ALLUSERS
+VerifyReadyDlg	RemoveNoShield	Enable	WixUI_InstallMode = "Remove"
+VerifyReadyDlg	RemoveNoShield	Show	WixUI_InstallMode = "Remove" AND NOT ALLUSERS
+VerifyReadyDlg	RemoveText	Show	WixUI_InstallMode = "Remove"
+VerifyReadyDlg	RemoveTitle	Show	WixUI_InstallMode = "Remove"
+VerifyReadyDlg	Repair	Default	WixUI_InstallMode = "Repair"
+VerifyReadyDlg	Repair	Enable	WixUI_InstallMode = "Repair"
+VerifyReadyDlg	Repair	Show	WixUI_InstallMode = "Repair"
+VerifyReadyDlg	RepairText	Show	WixUI_InstallMode = "Repair"
+VerifyReadyDlg	RepairTitle	Show	WixUI_InstallMode = "Repair"
+VerifyReadyDlg	Update	Enable	WixUI_InstallMode = "Update"
+VerifyReadyDlg	Update	Show	WixUI_InstallMode = "Update" AND ALLUSERS
+VerifyReadyDlg	UpdateNoShield	Enable	WixUI_InstallMode = "Update"
+VerifyReadyDlg	UpdateNoShield	Show	WixUI_InstallMode = "Update" AND NOT ALLUSERS
+VerifyReadyDlg	UpdateText	Show	WixUI_InstallMode = "Update"
+VerifyReadyDlg	UpdateTitle	Show	WixUI_InstallMode = "Update"
+WelcomeDlg	Description	Hide	Installed AND PATCH
+WelcomeDlg	Description	Show	NOT Installed OR NOT PATCH
+WelcomeDlg	PatchDescription	Hide	NOT Installed OR NOT PATCH
+WelcomeDlg	PatchDescription	Show	Installed AND PATCH

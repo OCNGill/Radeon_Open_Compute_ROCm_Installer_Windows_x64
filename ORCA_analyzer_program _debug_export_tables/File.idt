@@ -1,0 +1,27 @@
+File	Component_	FileName	FileSize	Version	Language	Attributes	Sequence
+s72	s72	l255	i4	S72	S20	I2	i4
+File	File
+GPUDetection.ps1	CustomActionScripts	sqtbswjb.ps1|GPUDetection.ps1	4205			512	4
+LMStudioURLFile	LMStudioConfig	lmstudio.url	52			512	8
+QUICKSTART.md	ROCmDocumentation	zk7cpwb3.md|QUICKSTART.md	2996			512	11
+README.md	ROCmDocumentation	README.md	16920			512	12
+SecurityConfig.ps1	CustomActionScripts	j1ukhaso.ps1|SecurityConfig.ps1	10672			512	16
+TROUBLESHOOTING.md	ROCmDocumentation	k6ionkq1.md|TROUBLESHOOTING.md	10404			512	19
+USAGE_EXAMPLES.md	ROCmDocumentation	0ydhygp1.md|USAGE_EXAMPLES.md	13774			512	20
+Validation.ps1	CustomActionScripts	eatl1mkf.ps1|Validation.ps1	6541			512	22
+amd_compatibility.txt	DiagnosticTools	gnxqrrj4.ps1|verify_amd_compatibility.ps1	1979			512	1
+driver_check.txt	DiagnosticTools	f3py0sgw.ps1|check_amd_driver.ps1	1177			512	2
+environment.yml	PythonEnvironment	9brez9sr.yml|environment.yml	369			512	3
+install_pytorch.sh	PyTorchScripts	ia-49lbj.sh|install_pytorch.sh	8702			512	5
+install_rocm.sh	ROCmScripts	tdi2s3l4.sh|install_rocm.sh	4144			512	6
+installer_actions.ps1	CustomActionScripts	b74ue5cx.ps1|installer_actions.ps1	9749			512	7
+logging_utils.py	StreamlitGUI	h5loqlu4.py|logging_utils.py	1096			512	9
+master_installer.ps1	ROCmScripts	cynsuun7.ps1|master_installer.ps1	7526			512	10
+requirements.txt	PythonEnvironment	hbe7ahc6.txt|requirements.txt	124			512	13
+rocm_wsl2_setup.sh	ROCmScripts	gghxckfy.sh|rocm_wsl2_setup.sh	1098			512	14
+rocminfo_link.txt	DiagnosticTools	wnsj1n8q.ps1|detect_hardware.ps1	1114			512	15
+streamlit_app.py	StreamlitGUI	uuzu0ynl.py|streamlit_app.py	16155			512	17
+streamlit_app_simple.py	StreamlitGUI	cqqf5qob.py|streamlit_app_simple.py	5874			512	18
+validate_installation.sh	PyTorchScripts	7fu6tafp.sh|validate_installation.sh	9941			512	21
+wsl2_setup.ps1	ROCmScripts	s8p9ewhk.ps1|wsl2_setup.ps1	3851			512	23
+wslconfig	WSL2Config	w0tlctig.ps1|wsl2_setup.ps1	3851			512	24

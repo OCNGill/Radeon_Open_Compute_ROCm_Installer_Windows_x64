@@ -1,0 +1,18 @@
+Feature_	Component_
+s38	s72
+FeatureComponents	Feature_	Component_
+DevTools	DevToolsShortcuts
+DevTools	DiagnosticTools
+LLMGUI	DesktopShortcuts
+LLMGUI	LMStudioConfig
+LLMGUI	LMStudioShortcuts
+LLMGUI	StreamlitGUI
+ProductFeature	CustomActionScripts
+PyTorch	PyTorchScripts
+PyTorch	PyTorchShortcuts
+PyTorch	PythonEnvironment
+ROCmRuntime	ROCmDocumentation
+ROCmRuntime	ROCmRegistry
+ROCmRuntime	ROCmScripts
+WSL2Support	WSL2Config
+WSL2Support	WSL2Shortcuts

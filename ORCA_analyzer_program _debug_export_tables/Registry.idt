@@ -1,0 +1,25 @@
+Registry	Root	Key	Name	Value	Component_
+s72	i2	l255	L255	L0	s72
+Registry	Registry
+reg12E6E71916BEECE77543A588D69905D5	1	Software\ROCm\LLMGUI	installed	#1	LMStudioShortcuts
+reg224EB79EBDC331DE83CBB7757AE6C927	2	Software\ROCm	InstallPath	[INSTALLFOLDER]	ROCmRegistry
+reg2741F803E6550B5B96F38DC31DD32A92	2	Software\ROCm\Python	RequirementsFile	[PythonEnvFolder]requirements.txt	PythonEnvironment
+reg2DA47CF588BF7CBBC4043C333C5CA858	2	Software\ROCm\LLMGUI	DownloadURL	https://lmstudio.ai/download	LMStudioConfig
+reg38D422606ED750EB7BC8E487972A652D	2	Software\ROCm\LLMGUI	Type	LMStudio	LMStudioConfig
+reg3B73121CEE3683D232086483C95731B6	2	Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductCode]	DisplayIcon	[INSTALLFOLDER]rocm_icon.ico	ROCmRegistry
+reg498A3E635EC7E4E6029A9DD4577B579A	2	Software\ROCm\WSL2	Configured	1	WSL2Config
+reg4DBFB8B9DF87B6FC70149A5E0D9CF06B	1	Software\ROCm\Desktop	shortcuts	#1	DesktopShortcuts
+reg5715CD9F921E9ED370CCF772A2D72A95	2	Software\ROCm\WSL2	Distribution	Ubuntu-22.04	WSL2Config
+reg572E498F2E9B52CDD37B752CD6A9FDDC	2	Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductCode]	Publisher	ROCm Community	ROCmRegistry
+reg775FB5E9CDF1662C16F205AB6D421915	2	Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductCode]	NoRepair	#1	ROCmRegistry
+reg7D5BB62CC2FF2FCC0A4A91EDE89CF89C	2	Software\ROCm	InstallDate	[Date]	ROCmRegistry
+reg93A44D8B29AF3DAE7E1C2CD09D6C3D1B	2	Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductCode]	URLInfoAbout	https://github.com/OCNGill/rOCM_Installer_Win11	ROCmRegistry
+regB3AB849AF0C69B02AF99B678B44ED8BE	2	Software\ROCm\Python	EnvironmentFile	[PythonEnvFolder]environment.yml	PythonEnvironment
+regBA0E7801C71DE0C632DBAA46369311ED	2	Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductCode]	DisplayName	AMD ROCm Windows 11 Installer	ROCmRegistry
+regC10F513C9AB71D1E7AE85FA6D996D0A8	1	Software\ROCm\PyTorch	installed	#1	PyTorchShortcuts
+regC583D4F6B20DD365F6CF9F6D3AEFE5F4	2	Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductCode]	DisplayVersion	[ProductVersion]	ROCmRegistry
+regCBE8153AE80AA748DAF88BD27F47077C	2	Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductCode]	NoModify	#1	ROCmRegistry
+regE5AE02AEF409AF917D7A49C1CF5B914C	2	Software\ROCm	WSLDistribution	Ubuntu-22.04	ROCmRegistry
+regE8F07A2338D57AEA80A62E0F02655250	1	Software\ROCm\DevTools	installed	#1	DevToolsShortcuts
+regEA22A93096C37AB122DC07B6D3B10D26	1	Software\ROCm\WSL2	shortcuts	#1	WSL2Shortcuts
+regF0FD805B58A05030F594216D6F7D2E39	2	Software\ROCm	Version	6.1.3	ROCmRegistry

@@ -1,0 +1,38 @@
+Action	Condition	Sequence
+s72	S255	I2
+InstallExecuteSequence	Action
+AppSearch		50
+CheckDriverVersion	NOT Installed	49
+ConfigureSecurity	NOT Installed	4001
+CostFinalize		1000
+CostInitialize		800
+CreateShortcuts		4500
+DetectGPU	NOT Installed	48
+FileCost		900
+FindRelatedProducts		25
+InstallFiles		4000
+InstallFinalize		6600
+InstallInitialize		1500
+InstallPyTorch	NOT Installed AND &PyTorch=3	4004
+InstallROCm	NOT Installed AND &ROCmRuntime=3	4003
+InstallValidate		1400
+InstallWSL2	NOT Installed AND &WSL2Support=3	4002
+LaunchConditions		100
+MigrateFeatureStates		1200
+ProcessComponents		1600
+PublishFeatures		6300
+PublishProduct		6400
+RegisterProduct		6100
+RegisterUser		6000
+RemoveEnvironmentStrings		3300
+RemoveExistingProducts		1401
+RemoveFiles		3500
+RemoveIniValues		3100
+RemoveRegistryValues		2600
+RemoveShortcuts		3200
+UnpublishFeatures		1800
+ValidateInstallation	NOT Installed	6599
+ValidateProductID		700
+WriteEnvironmentStrings		5200
+WriteIniValues		5100
+WriteRegistryValues		5000

@@ -1,0 +1,6 @@
+TextStyle	FaceName	Size	Color	StyleBits
+s72	s32	i2	I4	I2
+TextStyle	TextStyle
+WixUI_Font_Bigger	Tahoma	12		
+WixUI_Font_Normal	Tahoma	8		
+WixUI_Font_Title	Tahoma	9		1

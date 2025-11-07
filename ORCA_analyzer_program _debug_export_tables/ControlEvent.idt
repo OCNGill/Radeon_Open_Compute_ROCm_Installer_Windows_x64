@@ -1,0 +1,128 @@
+Dialog_	Control_	Event	Argument	Condition	Ordering
+s72	s50	s50	s255	S255	I2
+ControlEvent	Dialog_	Control_	Event	Argument	Condition
+BrowseDlg	Cancel	EndDialog	Return	1	2
+BrowseDlg	Cancel	Reset	0	1	1
+BrowseDlg	NewFolder	DirectoryListNew	0	1	1
+BrowseDlg	OK	EndDialog	Return	1	2
+BrowseDlg	OK	SetTargetPath	[_BrowseProperty]	1	1
+BrowseDlg	WixUI_Bmp_Up	DirectoryListUp	0	1	1
+CancelDlg	No	EndDialog	Return	1	1
+CancelDlg	Yes	EndDialog	Exit	1	1
+CustomizeDlg	Back	NewDialog	LicenseAgreementDlg	NOT Installed	2
+CustomizeDlg	Back	NewDialog	MaintenanceTypeDlg	Installed	1
+CustomizeDlg	Browse	SelectionBrowse	BrowseDlg	1	1
+CustomizeDlg	Cancel	SpawnDialog	CancelDlg	1	1
+CustomizeDlg	DiskCost	SpawnDialog	DiskCostDlg	1	1
+CustomizeDlg	Next	NewDialog	VerifyReadyDlg	1	1
+CustomizeDlg	Reset	Reset	0	1	1
+DiskCostDlg	OK	EndDialog	Return	1	1
+ErrorDlg	A	EndDialog	ErrorAbort	1	1
+ErrorDlg	C	EndDialog	ErrorCancel	1	1
+ErrorDlg	I	EndDialog	ErrorIgnore	1	1
+ErrorDlg	N	EndDialog	ErrorNo	1	1
+ErrorDlg	O	EndDialog	ErrorOk	1	1
+ErrorDlg	R	EndDialog	ErrorRetry	1	1
+ErrorDlg	Y	EndDialog	ErrorYes	1	1
+ExitDialog	Finish	EndDialog	Return	1	999
+FatalError	Finish	EndDialog	Exit	1	1
+FilesInUse	Exit	EndDialog	Exit	1	1
+FilesInUse	Ignore	EndDialog	Ignore	1	1
+FilesInUse	Retry	EndDialog	Retry	1	1
+LicenseAgreementDlg	Back	NewDialog	WelcomeDlg	1	1
+LicenseAgreementDlg	Cancel	SpawnDialog	CancelDlg	1	1
+LicenseAgreementDlg	Next	NewDialog	CustomizeDlg	LicenseAccepted = "1"	1
+LicenseAgreementDlg	Next	SpawnWaitDialog	WaitForCostingDlg	1 OR CostingComplete = 1	1
+LicenseAgreementDlg	Print	DoAction	WixUIPrintEula	1	1
+MaintenanceTypeDlg	Back	NewDialog	MaintenanceWelcomeDlg	1	1
+MaintenanceTypeDlg	Cancel	SpawnDialog	CancelDlg	1	1
+MaintenanceTypeDlg	ChangeButton	NewDialog	CustomizeDlg	1	1
+MaintenanceTypeDlg	ChangeButton	[WixUI_InstallMode]	Change	1	1
+MaintenanceTypeDlg	RemoveButton	NewDialog	VerifyReadyDlg	1	1
+MaintenanceTypeDlg	RemoveButton	[WixUI_InstallMode]	Remove	1	1
+MaintenanceTypeDlg	RepairButton	NewDialog	VerifyReadyDlg	1	1
+MaintenanceTypeDlg	RepairButton	[WixUI_InstallMode]	Repair	1	1
+MaintenanceWelcomeDlg	Cancel	SpawnDialog	CancelDlg	1	1
+MaintenanceWelcomeDlg	Next	NewDialog	MaintenanceTypeDlg	1	1
+MaintenanceWelcomeDlg	Next	SpawnWaitDialog	WaitForCostingDlg	1 OR CostingComplete = 1	1
+MsiRMFilesInUse	Cancel	EndDialog	Exit	1	1
+MsiRMFilesInUse	OK	EndDialog	Return	1	1
+MsiRMFilesInUse	OK	RMShutdownAndRestart	0	WixUIRMOption~="UseRM"	2
+OutOfDiskDlg	OK	EndDialog	Return	1	1
+OutOfRbDiskDlg	No	EndDialog	Return	1	1
+OutOfRbDiskDlg	Yes	EnableRollback	False	1	1
+OutOfRbDiskDlg	Yes	EndDialog	Return	1	2
+PrepareDlg	Cancel	SpawnDialog	CancelDlg	1	1
+ProgressDlg	Cancel	SpawnDialog	CancelDlg	1	1
+ResumeDlg	Cancel	SpawnDialog	CancelDlg	1	1
+ResumeDlg	Install	EnableRollback	False	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	5
+ResumeDlg	Install	EndDialog	Return	OutOfDiskSpace <> 1	2
+ResumeDlg	Install	EndDialog	Return	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	4
+ResumeDlg	Install	SpawnDialog	OutOfDiskDlg	(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")	6
+ResumeDlg	Install	SpawnDialog	OutOfRbDiskDlg	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)	3
+ResumeDlg	Install	SpawnWaitDialog	WaitForCostingDlg	1 OR CostingComplete = 1	1
+ResumeDlg	InstallNoShield	EnableRollback	False	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	5
+ResumeDlg	InstallNoShield	EndDialog	Return	OutOfDiskSpace <> 1	2
+ResumeDlg	InstallNoShield	EndDialog	Return	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	4
+ResumeDlg	InstallNoShield	SpawnDialog	OutOfDiskDlg	(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")	6
+ResumeDlg	InstallNoShield	SpawnDialog	OutOfRbDiskDlg	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)	3
+ResumeDlg	InstallNoShield	SpawnWaitDialog	WaitForCostingDlg	1 OR CostingComplete = 1	1
+UserExit	Finish	EndDialog	Exit	1	1
+VerifyReadyDlg	Back	NewDialog	CustomizeDlg	NOT Installed OR WixUI_InstallMode = "Change"	1
+VerifyReadyDlg	Back	NewDialog	MaintenanceTypeDlg	Installed AND NOT PATCH	2
+VerifyReadyDlg	Back	NewDialog	WelcomeDlg	Installed AND PATCH	3
+VerifyReadyDlg	Cancel	SpawnDialog	CancelDlg	1	1
+VerifyReadyDlg	Change	EnableRollback	False	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	4
+VerifyReadyDlg	Change	EndDialog	Return	OutOfDiskSpace <> 1	1
+VerifyReadyDlg	Change	EndDialog	Return	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	3
+VerifyReadyDlg	Change	SpawnDialog	OutOfDiskDlg	(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")	5
+VerifyReadyDlg	Change	SpawnDialog	OutOfRbDiskDlg	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)	2
+VerifyReadyDlg	ChangeNoShield	EnableRollback	False	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	4
+VerifyReadyDlg	ChangeNoShield	EndDialog	Return	OutOfDiskSpace <> 1	1
+VerifyReadyDlg	ChangeNoShield	EndDialog	Return	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	3
+VerifyReadyDlg	ChangeNoShield	SpawnDialog	OutOfDiskDlg	(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")	5
+VerifyReadyDlg	ChangeNoShield	SpawnDialog	OutOfRbDiskDlg	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)	2
+VerifyReadyDlg	Install	EnableRollback	False	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	4
+VerifyReadyDlg	Install	EndDialog	Return	OutOfDiskSpace <> 1	1
+VerifyReadyDlg	Install	EndDialog	Return	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	3
+VerifyReadyDlg	Install	SpawnDialog	OutOfDiskDlg	(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")	5
+VerifyReadyDlg	Install	SpawnDialog	OutOfRbDiskDlg	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)	2
+VerifyReadyDlg	InstallNoShield	EnableRollback	False	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	4
+VerifyReadyDlg	InstallNoShield	EndDialog	Return	OutOfDiskSpace <> 1	1
+VerifyReadyDlg	InstallNoShield	EndDialog	Return	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	3
+VerifyReadyDlg	InstallNoShield	SpawnDialog	OutOfDiskDlg	(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")	5
+VerifyReadyDlg	InstallNoShield	SpawnDialog	OutOfRbDiskDlg	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)	2
+VerifyReadyDlg	Remove	EnableRollback	False	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	5
+VerifyReadyDlg	Remove	EndDialog	Return	OutOfDiskSpace <> 1	2
+VerifyReadyDlg	Remove	EndDialog	Return	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	4
+VerifyReadyDlg	Remove	Remove	All	OutOfDiskSpace <> 1	1
+VerifyReadyDlg	Remove	SpawnDialog	OutOfDiskDlg	(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")	6
+VerifyReadyDlg	Remove	SpawnDialog	OutOfRbDiskDlg	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)	3
+VerifyReadyDlg	RemoveNoShield	EnableRollback	False	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	5
+VerifyReadyDlg	RemoveNoShield	EndDialog	Return	OutOfDiskSpace <> 1	2
+VerifyReadyDlg	RemoveNoShield	EndDialog	Return	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	4
+VerifyReadyDlg	RemoveNoShield	Remove	All	OutOfDiskSpace <> 1	1
+VerifyReadyDlg	RemoveNoShield	SpawnDialog	OutOfDiskDlg	(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")	6
+VerifyReadyDlg	RemoveNoShield	SpawnDialog	OutOfRbDiskDlg	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)	3
+VerifyReadyDlg	Repair	EnableRollback	False	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	6
+VerifyReadyDlg	Repair	EndDialog	Return	OutOfDiskSpace <> 1	3
+VerifyReadyDlg	Repair	EndDialog	Return	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	5
+VerifyReadyDlg	Repair	Reinstall	All	OutOfDiskSpace <> 1	2
+VerifyReadyDlg	Repair	ReinstallMode	ecmus	OutOfDiskSpace <> 1	1
+VerifyReadyDlg	Repair	SpawnDialog	OutOfDiskDlg	(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")	7
+VerifyReadyDlg	Repair	SpawnDialog	OutOfRbDiskDlg	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)	4
+VerifyReadyDlg	Update	EnableRollback	False	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	4
+VerifyReadyDlg	Update	EndDialog	Return	OutOfDiskSpace <> 1	1
+VerifyReadyDlg	Update	EndDialog	Return	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	3
+VerifyReadyDlg	Update	SpawnDialog	OutOfDiskDlg	(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")	5
+VerifyReadyDlg	Update	SpawnDialog	OutOfRbDiskDlg	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)	2
+VerifyReadyDlg	UpdateNoShield	EnableRollback	False	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	4
+VerifyReadyDlg	UpdateNoShield	EndDialog	Return	OutOfDiskSpace <> 1	1
+VerifyReadyDlg	UpdateNoShield	EndDialog	Return	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"	3
+VerifyReadyDlg	UpdateNoShield	SpawnDialog	OutOfDiskDlg	(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")	5
+VerifyReadyDlg	UpdateNoShield	SpawnDialog	OutOfRbDiskDlg	OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)	2
+WaitForCostingDlg	Return	EndDialog	Exit	1	1
+WelcomeDlg	Cancel	SpawnDialog	CancelDlg	1	1
+WelcomeDlg	Next	NewDialog	LicenseAgreementDlg	NOT Installed	1
+WelcomeDlg	Next	NewDialog	VerifyReadyDlg	Installed AND PATCH	1
+WelcomeDlg	Next	[WixUI_InstallMode]	Update	Installed AND PATCH	1

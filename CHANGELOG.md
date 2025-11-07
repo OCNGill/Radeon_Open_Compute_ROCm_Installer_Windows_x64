@@ -1,3 +1,14 @@
+# ROCm Windows Installer v1.7.0.0 - Critical Path Fix
+
+This release fixes the CustomAction path resolution issue that caused installation failures.
+
+## What's New in v1.7.0.0
+
+- **FIXED**: CustomAction path resolution - changed all CustomAction references from `[INSTALLFOLDER]CustomActions\` to `[CustomActionsFolder]` to match the actual installation directory structure.
+- **IMPROVED**: WMI queries updated to use Get-CimInstance for better compatibility.
+
+---
+
 # ROCm Windows Installer v1.6.0.0 - Bug Fix Release
 
 This release fixes a critical installation error that prevented the MSI from completing successfully.

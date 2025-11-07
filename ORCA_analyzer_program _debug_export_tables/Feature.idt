@@ -1,0 +1,9 @@
+Feature	Feature_Parent	Title	Description	Display	Level	Directory_	Attributes
+s38	S38	L64	L255	I2	i2	S72	i2
+Feature	Feature
+DevTools	ProductFeature	Development Tools	rocminfo, amd-smi, and diagnostic utilities (Optional)	10	2		8
+LLMGUI	ProductFeature	LM Studio GUI	Local LLM model management interface (Recommended)	8	1		8
+ProductFeature		AMD ROCm Complete Installation	Complete ROCm platform with all components	1	1	INSTALLFOLDER	0
+PyTorch	ProductFeature	PyTorch with ROCm	PyTorch 2.1.2 with ROCm 6.1.3 support (Required)	6	1		24
+ROCmRuntime	ProductFeature	ROCm Runtime	Core ROCm libraries and runtime (Required)	2	1		24
+WSL2Support	ProductFeature	WSL2 & Ubuntu 22.04	Windows Subsystem for Linux with Ubuntu (Required)	4	1		24

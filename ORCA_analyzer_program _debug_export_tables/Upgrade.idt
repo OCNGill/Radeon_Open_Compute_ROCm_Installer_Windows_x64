@@ -1,0 +1,5 @@
+UpgradeCode	VersionMin	VersionMax	Language	Attributes	Remove	ActionProperty
+s38	S20	S20	S255	i4	S255	s72
+Upgrade	UpgradeCode	VersionMin	VersionMax	Language	Attributes
+{12345678-1234-1234-1234-123456789012}		1.0.0.0		1		WIX_UPGRADE_DETECTED
+{12345678-1234-1234-1234-123456789012}	1.0.0.0			2		WIX_DOWNGRADE_DETECTED

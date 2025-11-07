@@ -1,0 +1,5 @@
+Property	Order	Value	X	Y	Width	Height	Text	Help
+s72	i2	s64	i2	i2	i2	i2	L0	L50
+RadioButton	Property	Order
+WixUIRMOption	1	UseRM	0	0	295	16	&Close the applications and attempt to restart them.	
+WixUIRMOption	2	DontUseRM	0	20	295	16	&Do not close applications. A reboot will be required.	

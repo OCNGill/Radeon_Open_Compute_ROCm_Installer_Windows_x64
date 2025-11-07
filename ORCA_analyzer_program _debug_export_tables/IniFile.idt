@@ -1,0 +1,5 @@
+IniFile	FileName	DirProperty	Section	Key	Value	Action	Component_
+s72	l255	S72	l96	l128	l255	i2	s72
+IniFile	IniFile
+LMStudioDocs	download.ini	LMStudioFolder	LMStudio	Docs	https://lmstudio.ai/docs	1	LMStudioConfig
+LMStudioDownload	download.ini	LMStudioFolder	LMStudio	URL	https://lmstudio.ai/download	1	LMStudioConfig

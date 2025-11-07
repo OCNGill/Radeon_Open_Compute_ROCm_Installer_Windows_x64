@@ -1,0 +1,19 @@
+Directory	Directory_Parent	DefaultDir
+s72	S72	l255
+Directory	Directory
+ApplicationProgramsFolder	ProgramMenuFolder	trlombjm|AMD ROCm
+BinFolder	INSTALLFOLDER	bin
+CustomActionsFolder	INSTALLFOLDER	jlrkgnlw|CustomActions
+DesktopFolder	TARGETDIR	Desktop
+DocsFolder	INSTALLFOLDER	docs
+GUIFolder	INSTALLFOLDER	gui
+INSTALLFOLDER	ProgramFiles64Folder	ROCm
+LMStudioFolder	INSTALLFOLDER	vnkvaqyp|lm_studio
+LibFolder	INSTALLFOLDER	lib
+ProgramFiles64Folder	TARGETDIR	.
+ProgramMenuFolder	TARGETDIR	.
+PythonEnvFolder	INSTALLFOLDER	odkm5xmb|python_env
+ScriptsFolder	INSTALLFOLDER	scripts
+TARGETDIR		SourceDir
+ToolsFolder	INSTALLFOLDER	tools
+WSL2Folder	INSTALLFOLDER	wsl2

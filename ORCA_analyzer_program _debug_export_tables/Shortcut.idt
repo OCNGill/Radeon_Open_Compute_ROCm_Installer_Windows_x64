@@ -1,0 +1,10 @@
+Shortcut	Directory_	Name	Component_	Target	Arguments	Description	Hotkey	Icon_	IconIndex	ShowCmd	WkDir	DisplayResourceDLL	DisplayResourceId	DescriptionResourceDLL	DescriptionResourceId
+s72	s72	l128	s72	s72	S255	L255	I2	S72	I2	I2	S72	S255	I2	S255	I2
+Shortcut	Shortcut
+AMDSMIShortcut	ApplicationProgramsFolder	3920cutp|AMD System Management Interface	DevToolsShortcuts	[WindowsFolder]System32\wsl.exe	-d Ubuntu-22.04 amd-smi	AMD GPU management and monitoring					INSTALLFOLDER				
+DesktopStreamlitShortcut	DesktopFolder	jgsduwbs|ROCm Dashboard	DesktopShortcuts	[WindowsFolder]System32\wsl.exe	-d Ubuntu-22.04 bash -c 'cd [GUIFolder] && streamlit run streamlit_app.py'	ROCm monitoring and testing dashboard					GUIFolder				
+DiagnosticsShortcut	ApplicationProgramsFolder	qjdtbmum|ROCm Diagnostics	DevToolsShortcuts	[WindowsFolder]System32\wsl.exe	-d Ubuntu-22.04 rocminfo	Run ROCm diagnostic tools					INSTALLFOLDER				
+LMStudioDownloadShortcut	ApplicationProgramsFolder	ov-5c8dx|Download LM Studio	LMStudioShortcuts	[LMStudioFolder]lmstudio.url		Open LM Studio download page									
+PythonWSLShortcut	ApplicationProgramsFolder	rrc0icww|ROCm Python Environment	PyTorchShortcuts	[WindowsFolder]System32\wsl.exe	-d Ubuntu-22.04 python3	Launch Python with ROCm support in WSL					INSTALLFOLDER				
+StreamlitGUIShortcut	ApplicationProgramsFolder	a670tcbj|ROCm Streamlit Dashboard	LMStudioShortcuts	[WindowsFolder]System32\wsl.exe	-d Ubuntu-22.04 bash -c 'cd [GUIFolder] && streamlit run streamlit_app.py'	Launch ROCm monitoring and testing dashboard					GUIFolder				
+WSLTerminalShortcut	ApplicationProgramsFolder	5tbc7wjv|ROCm WSL Terminal	WSL2Shortcuts	[WindowsFolder]System32\wsl.exe	-d Ubuntu-22.04	Open Ubuntu terminal with ROCm environment					INSTALLFOLDER				

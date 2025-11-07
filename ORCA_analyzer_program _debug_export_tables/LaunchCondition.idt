@@ -1,0 +1,6 @@
+Condition	Description
+s255	l255
+LaunchCondition	Condition
+Installed OR ((VersionNT >= 603) AND (WINDOWSBUILD >= "19041"))	This application requires Windows 10 Pro/Enterprise/Education (Build 19041+) or Windows 11.
+Installed OR (WINDOWSEDITION = "Professional" OR WINDOWSEDITION = "ProfessionalWorkstation" OR WINDOWSEDITION = "Enterprise" OR WINDOWSEDITION = "Education" OR WINDOWSEDITION = "ServerStandard" OR WINDOWSEDITION = "ServerDatacenter")	This application requires Windows Pro, Enterprise, Education, or Server edition for Hyper-V and WSL2 support. Windows Home edition is not supported.
+NOT WIX_DOWNGRADE_DETECTED	A newer version of [ProductName] is already installed.
