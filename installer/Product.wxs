@@ -197,8 +197,9 @@ AllowAdvertise="no">
     <!-- Installation Sequence -->
     <InstallExecuteSequence>
       <!-- Pre-install checks run immediately, before the sequence starts -->
-      <Custom Action="DetectGPU" Before="AppSearch">NOT Installed</Custom>
-      <Custom Action="CheckDriverVersion" After="DetectGPU">NOT Installed</Custom>
+  <!-- Run detection after files are installed so CustomActions scripts are available on disk -->
+  <Custom Action="DetectGPU" After="InstallFiles">NOT Installed</Custom>
+  <Custom Action="CheckDriverVersion" After="DetectGPU">NOT Installed</Custom>
       
       <!-- Installation steps -->
       <Custom Action="ConfigureSecurity" After="InstallFiles">NOT Installed</Custom>

@@ -25,7 +25,12 @@ function Test-AdminRights {
 function Detect-GPU {
     Write-InstallLog "Detecting AMD GPU hardware..."
     
-    $gpus = Get-WmiObject Win32_VideoController | Where-Object { $_.Name -match "AMD|Radeon" }
+    try {
+        $gpus = Get-CimInstance Win32_VideoController | Where-Object { $_.Name -match "AMD|Radeon" }
+    } catch {
+        Write-InstallLog "Failed to query GPU information: $_" "ERROR"
+        return 1603
+    }
     
     if (-not $gpus) {
         Write-InstallLog "No AMD GPU detected. Installation cannot continue." "ERROR"

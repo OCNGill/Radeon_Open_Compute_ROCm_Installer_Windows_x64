@@ -14,7 +14,7 @@ driver_check.txt	DiagnosticTools	f3py0sgw.ps1|check_amd_driver.ps1	1177			512	2
 environment.yml	PythonEnvironment	9brez9sr.yml|environment.yml	369			512	3
 install_pytorch.sh	PyTorchScripts	ia-49lbj.sh|install_pytorch.sh	8702			512	5
 install_rocm.sh	ROCmScripts	tdi2s3l4.sh|install_rocm.sh	4144			512	6
-installer_actions.ps1	CustomActionScripts	b74ue5cx.ps1|installer_actions.ps1	9749			512	7
+installer_actions.ps1	CustomActionScripts	b74ue5cx.ps1|installer_actions.ps1	9881			512	7
 logging_utils.py	StreamlitGUI	h5loqlu4.py|logging_utils.py	1096			512	9
 master_installer.ps1	ROCmScripts	cynsuun7.ps1|master_installer.ps1	7526			512	10
 requirements.txt	PythonEnvironment	hbe7ahc6.txt|requirements.txt	124			512	13

@@ -9,7 +9,7 @@ ARPURLUPDATEINFO	https://github.com/OCNGill/rOCM_Installer_Win11/releases
 DefaultUIFont	WixUI_Font_Normal
 ErrorDialog	ErrorDlg
 Manufacturer	ROCm Community
-ProductCode	{F0AAEB41-8E2C-460F-8904-E0FC4135B651}
+ProductCode	{626E668A-6A66-4331-8585-A9D73417E568}
 ProductLanguage	1033
 ProductName	AMD ROCm Windows Installer
 ProductVersion	1.0.0.0
