@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <ComponentGroup Id="CustomActionsComponents">
+      <ComponentRef Id="CustomActionScripts" />
+    </ComponentGroup>
+
+    <DirectoryRef Id="CustomActionsFolder">
+      <Component Id="CustomActionScripts" Guid="{e1f2a3b4-c5d6-7890-abcd-ef1234567890}">
+        <File Id="installer_actions.ps1" Source="CustomActions\installer_actions.ps1" KeyPath="yes" />
+        <File Id="GPUDetection.ps1" Source="CustomActions\GPUDetection.ps1" />
+        <File Id="SecurityConfig.ps1" Source="CustomActions\SecurityConfig.ps1" />
+        <File Id="Validation.ps1" Source="CustomActions\Validation.ps1" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

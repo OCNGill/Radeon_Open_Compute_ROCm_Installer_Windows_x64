@@ -64,6 +64,8 @@ Manufacturer="$(var.ProductManufacturer)" />
         Display="expand"
      ConfigurableDirectory="INSTALLFOLDER">
     
+      <ComponentGroupRef Id="CustomActionsComponents" />
+    
     <!-- Core ROCm Runtime -->
       <Feature Id="ROCmRuntime" 
 Title="ROCm Runtime" 
@@ -122,6 +124,7 @@ AllowAdvertise="no">
           <Directory Id="LibFolder" Name="lib" />
   <Directory Id="ScriptsFolder" Name="scripts" />
    <Directory Id="DocsFolder" Name="docs" />
+   <Directory Id="CustomActionsFolder" Name="CustomActions" />
  </Directory>
       </Directory>
     
