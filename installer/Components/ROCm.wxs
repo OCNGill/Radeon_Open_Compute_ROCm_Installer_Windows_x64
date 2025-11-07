@@ -8,7 +8,7 @@
     </ComponentGroup>
 
     <DirectoryRef Id="ScriptsFolder">
-      <Component Id="ROCmScripts" Guid="{C3D4E5F6-G7H8-9012-CDEF-123456789012}">
+  <Component Id="ROCmScripts" Guid="{5c1d9e8f-3b4a-5d6c-af01-2345678901cd}">
   <!-- Installation scripts -->
       <File Id="install_rocm.sh" Source="..\src\scripts\install_rocm.sh" KeyPath="yes" />
   <File Id="rocm_wsl2_setup.sh" Source="..\src\scripts\rocm_wsl2_setup.sh" />
@@ -18,7 +18,7 @@
     </DirectoryRef>
 
 <DirectoryRef Id="DocsFolder">
-  <Component Id="ROCmDocumentation" Guid="{D4E5F6G7-H8I9-0123-DEFG-234567890123}">
+  <Component Id="ROCmDocumentation" Guid="{6d2e0f90-4c5b-6e7d-b012-3456789012de}">
         <File Id="README.md" Source="..\README.md" KeyPath="yes" />
     <File Id="QUICKSTART.md" Source="..\QUICKSTART.md" />
   <File Id="TROUBLESHOOTING.md" Source="..\docs\TROUBLESHOOTING.md" />
@@ -27,7 +27,7 @@
     </DirectoryRef>
 
     <DirectoryRef Id="TARGETDIR">
- <Component Id="ROCmRegistry" Guid="{E5F6G7H8-I9J0-1234-EFGH-345678901234}">
+ <Component Id="ROCmRegistry" Guid="{7e3f1a01-5d6c-7f8e-c123-4567890123ef}">
     <!-- Registry keys for ROCm installation -->
         <RegistryKey Root="HKLM" Key="Software\ROCm">
   <RegistryValue Type="string" Name="InstallPath" Value="[INSTALLFOLDER]" KeyPath="yes" />

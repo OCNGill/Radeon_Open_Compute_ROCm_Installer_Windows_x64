@@ -8,7 +8,7 @@
 
     <DirectoryRef Id="INSTALLFOLDER">
       <Directory Id="ToolsFolder" Name="tools">
-        <Component Id="DiagnosticTools" Guid="{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}">
+  <Component Id="DiagnosticTools" Guid="{3a9b7c6e-1f2e-4b5c-8d9e-0123456789ac}">
        <!-- Placeholder for diagnostic utilities -->
     <File Id="rocminfo_link.txt" Source="..\src\scripts\detect_hardware.ps1" KeyPath="yes" />
           <File Id="amd_compatibility.txt" Source="..\src\scripts\verify_amd_compatibility.ps1" />
@@ -27,7 +27,7 @@
     </DirectoryRef>
 
     <DirectoryRef Id="ApplicationProgramsFolder">
-  <Component Id="DevToolsShortcuts" Guid="{B2C3D4E5-F6G7-8901-BCDE-F12345678901}">
+  <Component Id="DevToolsShortcuts" Guid="{f6e5d4c3-b2a1-0987-6f5e-4321098765ab}">
 <Shortcut Id="DiagnosticsShortcut"
         Name="ROCm Diagnostics"
                   Description="Run ROCm diagnostic tools"

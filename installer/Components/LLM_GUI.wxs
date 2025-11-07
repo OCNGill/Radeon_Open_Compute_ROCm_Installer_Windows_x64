@@ -9,7 +9,7 @@
 
     <DirectoryRef Id="INSTALLFOLDER">
  <Directory Id="GUIFolder" Name="gui">
-        <Component Id="StreamlitGUI" Guid="{I9J0K1L2-M3N4-5678-IJKL-789012345678}">
+  <Component Id="StreamlitGUI" Guid="{b2d7e5f6-91a0-23c4-0567-8901234567c3}">
    <!-- Streamlit GUI files -->
      <File Id="streamlit_app.py" Source="..\src\gui\streamlit_app.py" KeyPath="yes" />
     <File Id="streamlit_app_simple.py" Source="..\src\gui\streamlit_app_simple.py" />
@@ -20,7 +20,7 @@
     </Directory>
 
       <Directory Id="LMStudioFolder" Name="lm_studio">
-  <Component Id="LMStudioConfig" Guid="{J0K1L2M3-N4O5-6789-JKLM-890123456789}">
+  <Component Id="LMStudioConfig" Guid="{c3e8f6a7-02b1-34d5-1678-9012345678d4}">
     <!-- LM Studio configuration and links -->
           <IniFile Id="LMStudioDownload"
      Action="createLine"
@@ -47,7 +47,7 @@ Section="LMStudio"
   </DirectoryRef>
 
     <DirectoryRef Id="ApplicationProgramsFolder">
-      <Component Id="LMStudioShortcuts" Guid="{K1L2M3N4-O5P6-7890-KLMN-901234567890}">
+  <Component Id="LMStudioShortcuts" Guid="{d4f901b8-13c2-45e6-2789-0123456789e5}">
       <Shortcut Id="StreamlitGUIShortcut"
        Name="ROCm Streamlit Dashboard"
         Description="Launch ROCm monitoring and testing dashboard"
@@ -71,7 +71,7 @@ Section="LMStudio"
     </DirectoryRef>
 
     <DirectoryRef Id="DesktopFolder">
-      <Component Id="DesktopShortcuts" Guid="{L2M3N4O5-P6Q7-8901-LMNO-012345678901}">
+  <Component Id="DesktopShortcuts" Guid="{e5a012c9-24d3-56f7-3890-1234567890f6}">
         <Shortcut Id="DesktopStreamlitShortcut"
   Name="ROCm Dashboard"
           Description="ROCm monitoring and testing dashboard"
