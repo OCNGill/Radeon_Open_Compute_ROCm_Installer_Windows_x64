@@ -121,7 +121,7 @@ jobs:
       - name: Create GitHub Release
         shell: powershell
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
           Write-Host "Creating GitHub Release v$env:VERSION..." -ForegroundColor Cyan
           
@@ -154,4 +154,4 @@ jobs:
           # Create release using GitHub CLI
           gh release create "${{ github.ref_name }}" "$env:MSI_PATH" "$env:MSI_PATH.sha256" --title "ROCm Windows Installer ${{ github.ref_name }}" --notes-file $notesFile
           
-          Write-Host "Release created successfully!" -ForegroundColor Greenn`
+          Write-Host "Release created successfully!" -ForegroundColor Green
