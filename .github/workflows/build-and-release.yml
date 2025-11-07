@@ -58,7 +58,6 @@ jobs:
         shell: powershell
         run: |
           Write-Host "STEP: Build MSI Installer"
-          Push-Location ROCm_windows_installer_x64
           .\build_installer.ps1 -Configuration Release -Version "$env:VERSION" -Clean
           $msi = Get-ChildItem -Path "bin\Release" -Filter "*.msi" -Recurse | Select-Object -First 1
           if (-not $msi) { throw "MSI file not found after build" }
@@ -67,7 +66,6 @@ jobs:
           Move-Item -Path $msi.FullName -Destination $targetPath -Force
           Write-Host "MSI built and renamed: $targetPath" -ForegroundColor Green
           echo "MSI_PATH=$targetPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Pop-Location
 
       - name: Sign MSI with Self-Signed Certificate
         shell: powershell

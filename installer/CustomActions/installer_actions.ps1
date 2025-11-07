@@ -173,7 +173,7 @@ function Install-ROCm {
     Write-InstallLog "Installing ROCm in WSL2..."
     
     try {
-      $scriptPath = "$PSScriptRoot\..\src\scripts\install_ROCm.sh"
+      $scriptPath = "$PSScriptRoot\..\..\src\scripts\install_ROCm.sh"
    
     # Copy script to WSL
     wsl -d Ubuntu-22.04 -e bash -c "mkdir -p /tmp/ROCm_install"
@@ -206,7 +206,7 @@ function Install-PyTorch {
     Write-InstallLog "Installing PyTorch with ROCm support..."
     
     try {
-        $scriptPath = "$PSScriptRoot\..\src\scripts\install_pytorch.sh"
+        $scriptPath = "$PSScriptRoot\..\..\src\scripts\install_pytorch.sh"
         
   # Copy script to WSL
     $windowsPath = $scriptPath -replace '\\', '/'
@@ -237,7 +237,7 @@ function Validate-Installation {
     Write-InstallLog "Validating ROCm installation..."
     
     try {
-        $scriptPath = "$PSScriptRoot\..\src\scripts\validate_installation.sh"
+        $scriptPath = "$PSScriptRoot\..\..\src\scripts\validate_installation.sh"
         
  # Copy script to WSL
         $windowsPath = $scriptPath -replace '\\', '/'

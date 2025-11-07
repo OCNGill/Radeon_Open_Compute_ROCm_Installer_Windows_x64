@@ -15,7 +15,7 @@ It consolidates Python-based workflows with Conda environments and a standalone 
 - **docs/** — Documentation
 - **revision_documentation/** — Archived and deduplicated revision documents
 - **python_with_conda_env/** — Python-specific workflows with Conda environment
-- **ROCm_windows_installer_x64/** — MSI installer build system
+- **installer/** — MSI installer build system
 - **claude_skills_for_AI_workflows/** — Claude skills prompts for AI workflow automation
 - **testing/** — Testing environments (VM, Sandbox)
 
