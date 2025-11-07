@@ -139,17 +139,17 @@ AllowAdvertise="no">
     <CustomAction Id="DetectGPU"
                   Directory="INSTALLFOLDER"
                   ExeCommand="powershell.exe -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CustomActions\GPUDetection.ps1&quot;"
-                  Execute="deferred"
-                  Return="check"
-                  Impersonate="no" />
+                  Execute="immediate"
+                  Return="ignore"
+                  Impersonate="yes" />
 
     <!-- Pre-Install Driver Check -->
     <CustomAction Id="CheckDriverVersion"
                   Directory="INSTALLFOLDER"
                   ExeCommand="powershell.exe -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CustomActions\installer_actions.ps1&quot; -Action CheckDriver"
-                  Execute="deferred"
-                  Return="check"
-                  Impersonate="no" />
+                  Execute="immediate"
+                  Return="ignore"
+                  Impersonate="yes" />
 
     <!-- Security Configuration -->
     <CustomAction Id="ConfigureSecurity"
@@ -193,9 +193,9 @@ AllowAdvertise="no">
 
     <!-- Installation Sequence -->
     <InstallExecuteSequence>
-      <!-- Pre-install checks -->
-      <Custom Action="DetectGPU" Before="LaunchConditions">NOT Installed</Custom>
-  <Custom Action="CheckDriverVersion" After="DetectGPU">NOT Installed</Custom>
+      <!-- Pre-install checks run immediately, before the sequence starts -->
+      <Custom Action="DetectGPU" Before="AppSearch">NOT Installed</Custom>
+      <Custom Action="CheckDriverVersion" After="DetectGPU">NOT Installed</Custom>
       
       <!-- Installation steps -->
       <Custom Action="ConfigureSecurity" After="InstallFiles">NOT Installed</Custom>
