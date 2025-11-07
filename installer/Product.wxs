@@ -139,7 +139,7 @@ AllowAdvertise="no">
     <CustomAction Id="DetectGPU"
                   Directory="INSTALLFOLDER"
                   ExeCommand="powershell.exe -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CustomActions\GPUDetection.ps1&quot;"
-                  Execute="immediate"
+                  Execute="deferred"
                   Return="check"
                   Impersonate="no" />
 
@@ -147,7 +147,7 @@ AllowAdvertise="no">
     <CustomAction Id="CheckDriverVersion"
                   Directory="INSTALLFOLDER"
                   ExeCommand="powershell.exe -ExecutionPolicy Bypass -File &quot;[INSTALLFOLDER]CustomActions\installer_actions.ps1&quot; -Action CheckDriver"
-                  Execute="immediate"
+                  Execute="deferred"
                   Return="check"
                   Impersonate="no" />
 
