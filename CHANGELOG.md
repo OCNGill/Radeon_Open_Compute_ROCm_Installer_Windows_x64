@@ -1,3 +1,23 @@
+# ROCm Windows Installer v1.6.0.0 - Bug Fix Release
+
+This release fixes a critical installation error that prevented the MSI from completing successfully.
+
+## What's New in v1.6.0.0
+
+- **FIXED**: Error 2732 installation bug by including missing CustomActions scripts in the MSI package. The custom actions were failing because the required PowerShell scripts were not bundled in the installer.
+
+---
+
+# ROCm Windows Installer v1.5.0.0 - Bug Fix Release
+
+This release fixes a critical installation error that prevented the MSI from completing successfully.
+
+## What's New in v1.5.0.0
+
+- **FIXED**: Error 2732 installation bug by including missing CustomActions scripts in the MSI package. The custom actions were failing because the required PowerShell scripts were not bundled in the installer.
+
+---
+
 # ROCm Windows Installer v1.3.2.1 - Stability Release
 
 This release addresses numerous issues with the automated build pipeline, ensuring a stable and reproducible MSI installer. While the core functionality remains the same as v1.3, this version represents a significant effort in debugging and refining the CI/CD process.

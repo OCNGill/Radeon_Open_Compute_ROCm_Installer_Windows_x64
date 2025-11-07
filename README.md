@@ -1,4 +1,4 @@
-# Radeon_Open_Compute_ROCm_Installer_Windows_x64 (v1.3)
+# Radeon_Open_Compute_ROCm_Installer_Windows_x64 (v1.6)
 
 This repository provides a unified environment for deploying and testing AMD ROCm on Windows x64 systems.
 It consolidates Python-based workflows with Conda environments and a standalone MSI installer build system.
@@ -7,9 +7,9 @@ It consolidates Python-based workflows with Conda environments and a standalone 
 
 **For most users, download the one-click installer:**
 
-**[ROCm_windows_x64_1.3.msi](ROCm_windows_x64_1.3.msi)** - One-click installer (coming soon via GitHub Actions)
+**[ROCm_windows_x64_1.6.msi](ROCm_windows_x64_1.6.msi)** - One-click installer (coming soon via GitHub Actions)
 
-*Note: The MSI will be automatically built and released when you push the v1.3 tag. Check the Actions tab.*
+*Note: The MSI will be automatically built and released when you push the v1.6 tag. Check the Actions tab.*
 
 ## Repository structure
 - **docs/** — Documentation

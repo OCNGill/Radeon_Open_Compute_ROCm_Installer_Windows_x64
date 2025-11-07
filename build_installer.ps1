@@ -5,7 +5,7 @@
 
 param(
     [string]$Configuration = "Release",
-    [string]$Version = "1.0.0.0",
+    [string]$Version = "1.6.0.0",
     [switch]$Clean,
     [switch]$Verbose
 )
@@ -153,7 +153,8 @@ $wixFiles = @(
  "Components\ROCm.wxs",
  "Components\WSL2.wxs",
  "Components\Python.wxs",
- "Components\LLM_GUI.wxs"
+ "Components\LLM_GUI.wxs",
+ "CustomActions.wxs"
 )
 
 Write-ColorOutput "`n===== Compiling WiX Source Files =====" "Cyan"
