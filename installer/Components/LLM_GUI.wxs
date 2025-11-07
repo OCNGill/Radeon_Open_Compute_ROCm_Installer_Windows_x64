@@ -39,7 +39,7 @@ Section="LMStudio"
        Key="Docs"
      Value="https://lmstudio.ai/docs" />
         
-    <File Id="LMStudioURLFile" Source="..\Resources\lmstudio.url" />
+    <File Id="LMStudioURLFile" Source="Resources\lmstudio.url" />
         
    <RegistryKey Root="HKLM" Key="Software\ROCm\LLMGUI">
        <RegistryValue Type="string" Name="Type" Value="LMStudio" KeyPath="yes" />
