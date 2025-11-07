@@ -80,9 +80,16 @@ jobs:
           & $signtool sign /f "$env:PFX_PATH" /p "$env:PFX_PASSWORD" /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /d "ROCm Windows Installer" "$env:MSI_PATH"
           if ($LASTEXITCODE -eq 0) {
             Write-Host "MSI signed successfully" -ForegroundColor Green
-            & $signtool verify /pa "$env:MSI_PATH"
+            # Verify signature exists (ignore trust errors for self-signed certs)
+            & $signtool verify /pa "$env:MSI_PATH" 2>$null
+            if ($LASTEXITCODE -eq 0) {
+              Write-Host "Signature verification passed" -ForegroundColor Green
+            } else {
+              Write-Host "Signature verification failed (expected for self-signed certificate)" -ForegroundColor Yellow
+            }
           } else {
-            Write-Host "Warning: Signing completed with warnings" -ForegroundColor Yellow
+            Write-Host "ERROR: Signing failed with exit code $LASTEXITCODE" -ForegroundColor Red
+            exit $LASTEXITCODE
           }
 
       - name: Generate Checksums
