@@ -5,6 +5,7 @@
       <ComponentRef Id="LMStudioShortcuts" />
       <ComponentRef Id="LMStudioConfig" />
       <ComponentRef Id="StreamlitGUI" />
+      <ComponentRef Id="DesktopShortcuts" />
     </ComponentGroup>
 
     <DirectoryRef Id="INSTALLFOLDER">
