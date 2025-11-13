@@ -1,0 +1,37 @@
+<Configuration>
+  <!--
+    ============================================================================
+    ROCm Installer Windows Sandbox Configuration
+    ============================================================================
+    Purpose: Quick disposable testing environment for MSI installer
+    Features: Network enabled, mapped folders, elevated permissions
+    ============================================================================
+  -->
+  
+  <VGpu>Enable</VGpu>
+  
+  <Networking>Enable</Networking>
+  
+  <MappedFolders>
+    <!-- Map the installer output directory -->
+    <MappedFolder>
+      <HostFolder>C:\Users\steph\source\repos\OCNGill\rOCM_Installer_Win11\bin\Release</HostFolder>
+      <SandboxFolder>C:\Installer</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+    
+    <!-- Map a folder for test results and logs -->
+    <MappedFolder>
+      <HostFolder>F:\ROCm_VM_Testing\Sandbox_TestResults</HostFolder>
+      <SandboxFolder>C:\TestResults</SandboxFolder>
+      <ReadOnly>false</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+  
+  <LogonCommand>
+    <Command>powershell.exe -ExecutionPolicy Bypass -Command "Write-Host ''; Write-Host '????????????????????????????????????????????????????????????????????????' -ForegroundColor Cyan; Write-Host '?     ROCm Installer Testing Sandbox       ?' -ForegroundColor Cyan; Write-Host '?   AMD Development Team      ?' -ForegroundColor Cyan; Write-Host '????????????????????????????????????????????????????????????????????????' -ForegroundColor Cyan; Write-Host ''; Write-Host 'Installer location: C:\Installer' -ForegroundColor Yellow; Write-Host 'Test results: C:\TestResults' -ForegroundColor Yellow; Write-Host ''; Write-Host 'To test the installer:' -ForegroundColor White; Write-Host '  1. Navigate to C:\Installer' -ForegroundColor Gray; Write-Host '  2. Right-click the MSI file' -ForegroundColor Gray; Write-Host '  3. Select Run as Administrator' -ForegroundColor Gray; Write-Host '  4. Follow installation wizard' -ForegroundColor Gray; Write-Host '  5. Save logs to C:\TestResults' -ForegroundColor Gray; Write-Host ''; Write-Host 'Press any key to continue...' -ForegroundColor Yellow; $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')"</Command>
+  </LogonCommand>
+  
+  <MemoryInMB>8192</MemoryInMB>
+  
+</Configuration>

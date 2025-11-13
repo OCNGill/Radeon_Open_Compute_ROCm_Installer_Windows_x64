@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <ComponentGroup Id="PyTorchComponents">
+      <ComponentRef Id="PyTorchScripts" />
+      <ComponentRef Id="PythonEnvironment" />
+      <ComponentRef Id="PyTorchShortcuts" />
+    </ComponentGroup>
+
+    <DirectoryRef Id="ScriptsFolder">
+  <Component Id="PyTorchScripts" Guid="{8f4a2b12-6e7d-809f-d234-5678901234f0}">
+  <!-- PyTorch installation scripts -->
+<File Id="install_pytorch.sh" Source="..\src\scripts\install_pytorch.sh" KeyPath="yes" />
+        <File Id="validate_installation.sh" Source="..\src\scripts\validate_installation.sh" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Directory Id="PythonEnvFolder" Name="python_env">
+  <Component Id="PythonEnvironment" Guid="{90b5c3d4-7f8e-91a0-e345-6789012345a1}">
+   <!-- Python environment configuration -->
+   <File Id="environment.yml" Source="..\environment.yml" KeyPath="yes" />
+   <File Id="requirements.txt" Source="..\requirements.txt" />
+    
+          <!-- Registry for Python environment -->
+          <RegistryKey Root="HKLM" Key="Software\ROCm\Python">
+          <RegistryValue Type="string" Name="EnvironmentFile" Value="[PythonEnvFolder]environment.yml" />
+       <RegistryValue Type="string" Name="RequirementsFile" Value="[PythonEnvFolder]requirements.txt" />
+          </RegistryKey>
+        </Component>
+</Directory>
+    </DirectoryRef>
+
+    <DirectoryRef Id="ApplicationProgramsFolder">
+  <Component Id="PyTorchShortcuts" Guid="{a1c6d4e5-809f-12b3-f456-7890123456b2}">
+        <Shortcut Id="PythonWSLShortcut"
+         Name="ROCm Python Environment"
+      Description="Launch Python with ROCm support in WSL"
+           Target="[WindowsFolder]System32\wsl.exe"
+         Arguments="-d Ubuntu-22.04 python3"
+       WorkingDirectory="INSTALLFOLDER" />
+
+   <RemoveFolder Id="RemovePyTorchShortcuts" On="uninstall" />
+<RegistryValue Root="HKCU" 
+       Key="Software\ROCm\PyTorch" 
+             Name="installed" 
+          Type="integer" 
+             Value="1" 
+         KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
