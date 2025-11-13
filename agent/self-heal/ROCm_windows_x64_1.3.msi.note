@@ -1,0 +1,30 @@
+This is the one click installer, download this first.
+
+ROCm Windows Installer v1.3
+==========================
+
+This MSI installer provides one-click installation of AMD ROCm on Windows 10/11 systems.
+
+Features:
+- Automated WSL2 setup with Ubuntu 22.04
+- Complete ROCm 6.1.3 installation
+- PyTorch 2.1.2 with ROCm support
+- LM Studio GUI integration
+- Hardware validation and compatibility checks
+
+System Requirements:
+- Windows 10 Pro/Enterprise/Education (Build 19041+) OR Windows 11
+- AMD Radeon RX 7000 Series GPU or Ryzen AI APU
+- 16GB+ RAM (32GB recommended)
+- 50GB+ free disk space
+- Administrator privileges
+
+Installation:
+1. Right-click this MSI file
+2. Select "Run as Administrator"
+3. Follow the installation wizard
+4. Reboot if prompted
+
+Note: This installer is signed with a self-signed certificate. Windows SmartScreen will show a warning - click "More info" then "Run anyway".
+
+For documentation and support: https://github.com/OCNGill/Radeon_Open_Compute_ROCm_Installer_Windows_x64

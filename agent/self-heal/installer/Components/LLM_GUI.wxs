@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <ComponentGroup Id="LMStudioComponents">
+      <ComponentRef Id="LMStudioShortcuts" />
+      <ComponentRef Id="LMStudioConfig" />
+      <ComponentRef Id="StreamlitGUI" />
+      <ComponentRef Id="DesktopShortcuts" />
+    </ComponentGroup>
+
+    <DirectoryRef Id="INSTALLFOLDER">
+ <Directory Id="GUIFolder" Name="gui">
+  <Component Id="StreamlitGUI" Guid="{b2d7e5f6-91a0-23c4-0567-8901234567c3}">
+   <!-- Streamlit GUI files -->
+     <File Id="streamlit_app.py" Source="..\src\gui\streamlit_app.py" KeyPath="yes" />
+    <File Id="streamlit_app_simple.py" Source="..\src\gui\streamlit_app_simple.py" />
+
+   <!-- Logging utilities -->
+     <File Id="logging_utils.py" Source="..\src\utils\logging_utils.py" />
+        </Component>
+    </Directory>
+
+      <Directory Id="LMStudioFolder" Name="lm_studio">
+  <Component Id="LMStudioConfig" Guid="{c3e8f6a7-02b1-34d5-1678-9012345678d4}">
+    <!-- LM Studio configuration and links -->
+          <IniFile Id="LMStudioDownload"
+     Action="createLine"
+     Directory="LMStudioFolder"
+  Name="download.ini"
+                   Section="LMStudio"
+Key="URL"
+    Value="https://lmstudio.ai/download" />
+        
+   <IniFile Id="LMStudioDocs"
+    Action="createLine"
+         Directory="LMStudioFolder"
+          Name="download.ini"
+Section="LMStudio"
+       Key="Docs"
+     Value="https://lmstudio.ai/docs" />
+        
+    <File Id="LMStudioURLFile" Source="Resources\lmstudio.url" />
+        
+   <RegistryKey Root="HKLM" Key="Software\ROCm\LLMGUI">
+       <RegistryValue Type="string" Name="Type" Value="LMStudio" KeyPath="yes" />
+        <RegistryValue Type="string" Name="DownloadURL" Value="https://lmstudio.ai/download" />
+ </RegistryKey>
+</Component>
+      </Directory>
+  </DirectoryRef>
+
+    <DirectoryRef Id="ApplicationProgramsFolder">
+  <Component Id="LMStudioShortcuts" Guid="{d4f901b8-13c2-45e6-2789-0123456789e5}">
+      <Shortcut Id="StreamlitGUIShortcut"
+       Name="ROCm Streamlit Dashboard"
+        Description="Launch ROCm monitoring and testing dashboard"
+        Target="[WindowsFolder]System32\wsl.exe"
+     Arguments="-d Ubuntu-22.04 bash -c 'cd [GUIFolder] &amp;&amp; streamlit run streamlit_app.py'"
+    WorkingDirectory="GUIFolder" />
+        
+   <Shortcut Id="LMStudioDownloadShortcut"
+            Name="Download LM Studio"
+    Description="Open LM Studio download page"
+    Target="[LMStudioFolder]lmstudio.url" />
+
+   <RemoveFolder Id="RemoveLMStudioShortcuts" On="uninstall" />
+  <RegistryValue Root="HKCU" 
+    Key="Software\ROCm\LLMGUI" 
+      Name="installed" 
+       Type="integer" 
+   Value="1" 
+       KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="DesktopFolder">
+  <Component Id="DesktopShortcuts" Guid="{e5a012c9-24d3-56f7-3890-1234567890f6}">
+        <Shortcut Id="DesktopStreamlitShortcut"
+  Name="ROCm Dashboard"
+          Description="ROCm monitoring and testing dashboard"
+  Target="[WindowsFolder]System32\wsl.exe"
+  Arguments="-d Ubuntu-22.04 bash -c 'cd [GUIFolder] &amp;&amp; streamlit run streamlit_app.py'"
+    WorkingDirectory="GUIFolder" />
+        
+        <RegistryValue Root="HKCU" 
+    Key="Software\ROCm\Desktop" 
+            Name="shortcuts" 
+        Type="integer" 
+  Value="1" 
+       KeyPath="yes" />
+</Component>
+</DirectoryRef>
+  </Fragment>
+</Wix>
