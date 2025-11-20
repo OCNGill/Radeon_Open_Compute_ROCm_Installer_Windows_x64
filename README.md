@@ -206,7 +206,45 @@ graph TD
 
 ```
 ROCm_Win11_installer/
-	src/
+
+---
+
+## ROCm AI Platform — Local LLMs & Docker management
+
+The project now includes an expanded Streamlit UI (`src/gui/streamlit_app.py`) that provides a lightweight "ROCm AI Platform" for managing local AI tooling after ROCm is installed. Key additions:
+
+- A **Docker & Containers** tab to build/manage local images (vLLM server and a PyTorch/JupyterLab developer image).
+- A **Models & Chat** tab that displays model configuration (`src/config/llm_config.yaml`) and provides a local chat UI (client) that can connect to a running vLLM service.
+- Helper scripts:
+   - `src/scripts/prepare_wsl_env.ps1` — prepares the WSL environment and copies installation scripts into `/tmp/ROCm_install` inside `Ubuntu-22.04`.
+   - `src/scripts/run_docker_build.ps1` — wrapper used by the GUI to build Docker images from Windows/PowerShell.
+
+How to run the GUI (PowerShell):
+
+```powershell
+# (Optional) Activate the project's Python environment
+# conda activate ROCm_installer_env
+
+# Launch Streamlit UI
+streamlit run src/gui/streamlit_app.py
+```
+
+Manual Docker build example (PowerShell):
+
+```powershell
+cd src\docker\vllm
+docker build -t rocm-vllm:latest .
+
+# Or use the provided helper script (example)
+.\src\scripts\run_docker_build.ps1 -Path "$(Resolve-Path src\docker\vllm)" -Tag rocm-vllm:latest
+```
+
+Notes:
+
+- Docker features require Docker Desktop installed and running on Windows.
+- WSL operations assume an Ubuntu distribution named `Ubuntu-22.04`.
+- The Chat UI is a client; to use it you must run a vLLM server/container or point the config to an existing endpoint.
+
 	gui/
 	streamlit_app.py          # Main web interface?    scripts/
     detect_hardware.ps1        # Windows hardware detection

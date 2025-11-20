@@ -1,0 +1,14 @@
+llm_endpoints:
+  local:
+    url: http://localhost:8000/v1
+    model: 'facebook/opt-125m' # Default small model for testing
+    enabled: true
+    timeout_seconds: 300
+
+models:
+  storage_path: "./models"
+  download_source: "huggingface"
+
+docker:
+  vllm_image: "rocm-vllm:latest"
+  pytorch_image: "rocm-pytorch-dev:latest"

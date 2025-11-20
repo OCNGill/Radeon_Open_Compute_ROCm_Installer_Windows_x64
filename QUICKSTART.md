@@ -29,6 +29,21 @@ streamlit run src/gui/streamlit_app.py
    - PyTorch Installation
 3. **Validate** ? Test ROCm and PyTorch
 
+### Optional: Docker & Local LLMs (after ROCm)
+
+If you plan to run local LLM serving (vLLM) or a JupyterLab development container, use the Docker tab in the GUI or build manually.
+
+```powershell
+# Build vLLM image manually
+cd src\docker\vllm
+docker build -t rocm-vllm:latest .
+
+# Prepare WSL environment (copies install scripts into WSL)
+.\n+src\scripts\prepare_wsl_env.ps1
+```
+
+You can also trigger builds via the GUI which calls `src/scripts/run_docker_build.ps1` under the hood.
+
 ## Total Time: ~30-45 minutes (mostly automated waiting)
 
 ---

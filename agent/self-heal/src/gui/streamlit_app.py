@@ -80,21 +80,21 @@ def run_powershell_script(script_name, params=""):
         script_path = Path(__file__).parent.parent / "scripts" / script_name
    
         if not script_path.exists():
-return False, f"Script not found: {script_path}"
+            return False, f"Script not found: {script_path}"
         
         cmd = ["powershell", "-ExecutionPolicy", "Bypass", "-File", str(script_path)]
-    if params:
+        if params:
             cmd.append(params)
         
         result = subprocess.run(
-  cmd,
+            cmd,
             capture_output=True,
             text=True,
             timeout=300  # 5 minutes timeout
-    )
+        )
         
-   return result.returncode == 0, result.stdout + result.stderr
-except subprocess.TimeoutExpired:
+        return result.returncode == 0, result.stdout + result.stderr
+    except subprocess.TimeoutExpired:
         return False, "Script execution timed out"
     except Exception as e:
         return False, f"Error: {str(e)}"
@@ -102,12 +102,12 @@ except subprocess.TimeoutExpired:
 def run_wsl_command(command, description=""):
     """Execute a command in WSL"""
     try:
- add_log(f"Executing WSL command: {description or command}")
+        add_log(f"Executing WSL command: {description or command}")
         result = subprocess.run(
             ["wsl", "-d", "Ubuntu-22.04", "-e", "bash", "-c", command],
-         capture_output=True,
-     text=True,
-      timeout=600  # 10 minutes timeout
+            capture_output=True,
+            text=True,
+            timeout=600  # 10 minutes timeout
         )
         return result.returncode == 0, result.stdout + result.stderr
     except Exception as e:
@@ -159,7 +159,7 @@ with st.sidebar:
     
     if st.button("?? View Full Logs"):
         if st.session_state.logs:
-            st.text_area("Installation Logs", "\n".join(st.session_state.logs), height=300)
+            st.text_area("Installation Logs", "\n".join(st.session_state.logs), height=500, key="full_logs")
 
 # Main Content Area
 tab1, tab2, tab3, tab4 = st.tabs(["?? Home", "?? Compatibility", "?? Installation", "?? Documentation"])
@@ -173,7 +173,7 @@ with tab1:
         st.markdown("""
     ### What is ROCm?
         
-        AMD ROCm™ (Radeon Open Compute) is an open-source software platform for GPU computing.
+        AMD ROCmï¿½ (Radeon Open Compute) is an open-source software platform for GPU computing.
         It enables:
         - ?? Machine Learning & AI Development
         - ?? Stable Diffusion & Image Generation

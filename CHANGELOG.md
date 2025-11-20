@@ -1,3 +1,19 @@
+# Unreleased - 2025-11-19
+
+## Added
+
+- Streamlit GUI expanded with Docker & Containers tab and Models & Chat tab for local LLM workflows.
+- `src/scripts/prepare_wsl_env.ps1` — helper to copy/install WSL-side scripts into Ubuntu-22.04 `/tmp/ROCm_install`.
+- `src/scripts/run_docker_build.ps1` — PowerShell wrapper for `docker build` used by the GUI.
+- `src/config/llm_config.yaml` — configuration for local models/endpoints.
+- `src/docker/vllm/Dockerfile` and `src/docker/pytorch/Dockerfile` — container definitions for vLLM serving and PyTorch/JupyterLab.
+
+## Changed
+
+- Documentation: `README.md` and `QUICKSTART.md` updated to describe the new GUI features and how to run/build containers.
+
+---
+
 # ROCm Windows Installer v1.7.0.0 - Critical Path Fix
 
 This release fixes the CustomAction path resolution issue that caused installation failures.
