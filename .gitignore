@@ -378,4 +378,4 @@ venv.bak/
 *.so
 
 # Keep environment.yml
-!environment.yml
+!environment.ymltemp_atlas_analysis/
